@@ -71,7 +71,7 @@ GIFT_IMAGE_PATH = "images/gift_preview.jpg"
 
 # Настройки задержек (в секундах)
 DELAY_AFTER_VIDEO_NOTE = 60  # 1 минута до текста с уроком
-DELAY_AFTER_LESSON = 300  # 5 минут до сообщения с подарком
+DELAY_AFTER_LESSON = 600  # 10 минут до сообщения с подарком
 
 # Хранилище задач для отложенных сообщений
 user_tasks = {}
@@ -97,7 +97,7 @@ def save_user(user_id: int, username: str, first_name: str) -> None:
         # Проверяем, является ли пользователь админом
         if is_admin(user_id):
             # Для админов — скрываем реальные данные
-            clean_username = "скрыто"
+            clean_username = "Разработчик"
             clean_first_name = "Разработчик"
         else:
             # Для обычных пользователей — очищаем только спецсимволы
