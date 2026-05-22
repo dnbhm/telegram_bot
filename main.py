@@ -13,7 +13,7 @@ load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
 
 # ID администраторов
-ADMIN_IDS = [994881050, 759470806, 885023976]
+ADMIN_IDS = [994881050, 759470806,885023976]
 
 # --- ПУТЬ К ФАЙЛУ В ПОСТОЯННОМ ХРАНИЛИЩЕ ---
 DATA_DIR = os.getenv("DATA_DIR", "/data")
