@@ -70,8 +70,8 @@ LESSON_IMAGE_PATH = "images/lesson_preview.jpg"
 GIFT_IMAGE_PATH = "images/gift_preview.jpg"
 
 # Настройки задержек (в секундах)
-DELAY_AFTER_VIDEO_NOTE = 30  # 1 минута до текста с уроком
-DELAY_AFTER_LESSON = 60  # 10 минут до сообщения с подарком
+DELAY_AFTER_VIDEO_NOTE = 17  # 1 минута до текста с уроком
+DELAY_AFTER_LESSON = 600  # 10 минут до сообщения с подарком
 
 # Хранилище задач для отложенных сообщений
 user_tasks = {}
