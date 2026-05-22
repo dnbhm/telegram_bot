@@ -1,5 +1,7 @@
 import os
 import asyncio
+import json
+from datetime import datetime
 from dotenv import load_dotenv
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, BotCommand
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes, MessageHandler, filters
@@ -9,6 +11,13 @@ load_dotenv()
 
 # Токен бота из переменной окружения
 TOKEN = os.getenv("BOT_TOKEN")
+
+# ID администраторов (замени на реальные ID)
+# Чтобы узнать свой ID, отправь боту команду /myid (добавлена ниже)
+ADMIN_IDS = [123456789, 987654321]  # ⚠️ ЗАМЕНИ НА РЕАЛЬНЫЕ ID!
+
+# Файл для хранения пользователей
+USERS_FILE = "users.json"
 
 # --- Константы с текстами и ссылками ---
 
@@ -66,6 +75,100 @@ DELAY_AFTER_LESSON = 1800  # 30 минут до "Как успехи?"
 user_tasks = {}
 
 
+# --- Функции для работы с пользователями ---
+
+def load_users() -> dict:
+    """Загружает список пользователей из файла"""
+    try:
+        with open(USERS_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+def save_user(user_id: int, username: str, first_name: str) -> None:
+    """Сохраняет пользователя в файл"""
+    users = load_users()
+    user_id_str = str(user_id)
+
+    if user_id_str not in users:
+        users[user_id_str] = {
+            "id": user_id,
+            "username": username,
+            "first_name": first_name,
+            "first_seen": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        with open(USERS_FILE, "w", encoding="utf-8") as f:
+            json.dump(users, f, ensure_ascii=False, indent=2)
+
+
+def is_admin(user_id: int) -> bool:
+    """Проверяет, является ли пользователь админом"""
+    return user_id in ADMIN_IDS
+
+
+# --- Команда для получения своего ID ---
+async def myid_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Показывает ID пользователя (нужно, чтобы узнать ID админов)"""
+    user = update.effective_user
+    await update.message.reply_text(
+        f"🆔 *Твой ID:* `{user.id}`\n"
+        f"👤 *Username:* @{user.username}\n"
+        f"📛 *Имя:* {user.first_name}",
+        parse_mode="Markdown"
+    )
+
+
+# --- Команда /stat (статистика) ---
+async def stat_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Показывает список всех пользователей, кто нажал /start (только для админов)"""
+    user_id = update.effective_user.id
+
+    if not is_admin(user_id):
+        await update.message.reply_text("⛔ *Доступ запрещён!*\nЭта команда только для администраторов.",
+                                        parse_mode="Markdown")
+        return
+
+    users = load_users()
+
+    if not users:
+        await update.message.reply_text("📊 *Статистика*\n\nПока ни одного пользователя не нажало /start.",
+                                        parse_mode="Markdown")
+        return
+
+    # Формируем список пользователей
+    user_list = []
+    for uid, data in users.items():
+        username = f"@{data['username']}" if data['username'] else "❌ нет username"
+        first_name = data['first_name'] or "❌ нет имени"
+        first_seen = data['first_seen']
+        user_list.append(f"• `{uid}` | {username} | {first_name} | с {first_seen}")
+
+    # Разбиваем на части (Telegram ограничивает длину сообщения)
+    all_users_text = "\n".join(user_list)
+    total_count = len(users)
+
+    header = f"📊 *Статистика бота*\n\n👥 *Всего пользователей:* {total_count}\n\n📋 *Список:*\n\n"
+
+    # Если список слишком длинный, отправляем по частям
+    if len(header + all_users_text) > 4000:
+        await update.message.reply_text(f"📊 *Статистика бота*\n\n👥 *Всего пользователей:* {total_count}",
+                                        parse_mode="Markdown")
+
+        # Отправляем список частями
+        chunk = ""
+        for line in user_list:
+            if len(chunk + line + "\n") > 4000:
+                await update.message.reply_text(chunk, parse_mode="Markdown")
+                chunk = line + "\n"
+            else:
+                chunk += line + "\n"
+        if chunk:
+            await update.message.reply_text(chunk, parse_mode="Markdown")
+    else:
+        await update.message.reply_text(header + all_users_text, parse_mode="Markdown")
+
+
 # --- Функция для установки команд бота в меню ---
 async def set_commands(application: Application) -> None:
     """Устанавливает команды в меню бота"""
@@ -73,6 +176,8 @@ async def set_commands(application: Application) -> None:
         BotCommand("start", "Начать заново"),
         BotCommand("menu", "Показать главное меню"),
         BotCommand("help", "Помощь"),
+        BotCommand("myid", "Узнать свой ID"),
+        BotCommand("stat", "Статистика (только админы)"),
     ]
     await application.bot.set_my_commands(commands)
     print("✅ Команды бота установлены")
@@ -135,6 +240,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = update.effective_user
     user_id = user.id
     chat_id = update.effective_chat.id
+
+    # Сохраняем пользователя в файл
+    save_user(user_id, user.username, user.first_name)
+    print(f"📝 Новый пользователь: {user.first_name} (@{user.username}) ID: {user_id}")
 
     # Отменяем предыдущие задачи, если они есть
     if user_id in user_tasks:
@@ -228,7 +337,9 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "🤖 *Команды бота:*\n\n"
         "/start - Начать заново\n"
         "/menu - Показать главное меню\n"
-        "/help - Показать эту справку\n\n"
+        "/help - Показать эту справку\n"
+        "/myid - Узнать свой ID (нужно для админов)\n"
+        "/stat - Статистика пользователей (только админы)\n\n"
         "Просто нажимай на кнопки для навигации!"
     )
     await update.message.reply_text(help_text, parse_mode="Markdown")
@@ -257,6 +368,8 @@ def main() -> None:
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("menu", menu))
     application.add_handler(CommandHandler("help", help_command))
+    application.add_handler(CommandHandler("myid", myid_command))
+    application.add_handler(CommandHandler("stat", stat_command))
 
     # Регистрируем обработчики callback-кнопок
     application.add_handler(CallbackQueryHandler(forward_menu_callback, pattern="forward_menu"))
@@ -268,6 +381,7 @@ def main() -> None:
     print("🚀 Бот запущен и готов к работе!")
     print("📱 Проверь бота в Telegram")
     print("⏱️ Тайминги: кружок → 1 минута → урок (с кнопкой-ссылкой) → 30 минут → 'Как успехи?'")
+    print(f"👑 Админы ID: {ADMIN_IDS}")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 
