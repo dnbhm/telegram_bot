@@ -16,10 +16,8 @@ TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_IDS = [994881050, 759470806]  # ⚠️ ЗАМЕНИ НА РЕАЛЬНЫЕ ID!
 
 # --- ПУТЬ К ФАЙЛУ В ПОСТОЯННОМ ХРАНИЛИЩЕ ---
-# Используем /data для Railway/Koyeb, или папку data для локального запуска
-DATA_DIR = os.getenv("DATA_DIR", "/data")  # На хостинге будет /data, локально — ./data
+DATA_DIR = os.getenv("DATA_DIR", "/data")
 if not os.path.exists(DATA_DIR):
-    # Если папки /data нет (локальный запуск), создаём папку data в проекте
     DATA_DIR = "data"
     os.makedirs(DATA_DIR, exist_ok=True)
 
@@ -61,8 +59,22 @@ HOW_ARE_YOU_TEXT = (
     "И помни: главное — не бояться начинать. У тебя всё получится! 💪"
 )
 
+# НОВОЕ сообщение с подарком (через 5 минут после отправки видео)
+GIFT_MESSAGE_TEXT = (
+    "*Ты уже сделал первые шаги к своему росту этим летом, но это ещё не всё☕️*\n\n"
+    "Я подготовила для вас подарок, который поможет продвинуться в сфере монтажа, и это……\n\n"
+    "||*Разбор от меня или моей команды (шок??!!?)*||\n\n"
+    "Сейчас ты можешь принять участие в бесплатной консультации, на которой получишь точечные решения ситуаций в работе монтажёром💻\n\n"
+    "Мы поговорим обо всем: как начать работать, продолжать расти, креативить и быть востребованным специалистом\n\n"
+    "А после разбора у тебя будет возможность попасть ко мне на обучение по самым вкусным условиям🧁\n\n"
+    "*Заполняй анкету right nowwww* 👇"
+)
+
+# Ссылка на анкету (Google Forms)
+SURVEY_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeV3hbxukt2k-_9JVf0OyPPJf68ySNcsoB-kZF6NjdeBRDOgQ/viewform?usp=publish-editor"  # ⚠️ ЗАМЕНИ НА РЕАЛЬНУЮ ССЫЛКУ
+
 # Ссылка на видео (YouTube)
-VIDEO_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+VIDEO_URL = "https://www.youtube.com/watch?v=7q0tfS3NcJc&feature=youtu.be"
 
 # Путь к кружку (video note)
 VIDEO_NOTE_PATH = "video_notes/welcome.mp4"
@@ -73,9 +85,13 @@ WELCOME_IMAGE_PATH = "images/welcome.jpg"
 # Путь к картинке с описанием урока
 LESSON_IMAGE_PATH = "images/lesson_preview.jpg"
 
+# Путь к картинке для сообщения с подарком (опционально)
+GIFT_IMAGE_PATH = "images/gift_preview.jpg"
+
 # Настройки задержек (в секундах)
 DELAY_AFTER_VIDEO_NOTE = 60  # 1 минута до текста с уроком
-DELAY_AFTER_LESSON = 1800  # 30 минут до "Как успехи?"
+DELAY_AFTER_LESSON = 300  # 5 минут до сообщения с подарком (было 30 минут)
+DELAY_AFTER_GIFT = 1800  # 30 минут до "Как успехи?" (после подарка)
 
 # Хранилище задач для отложенных сообщений
 user_tasks = {}
@@ -98,12 +114,17 @@ def save_user(user_id: int, username: str, first_name: str) -> None:
     user_id_str = str(user_id)
 
     if user_id_str not in users:
+        # Очищаем username и first_name от спецсимволов
+        clean_username = username.replace('_', '').replace('*', '') if username else None
+        clean_first_name = first_name.replace('_', '').replace('*', '') if first_name else None
+
         users[user_id_str] = {
             "id": user_id,
-            "username": username,
-            "first_name": first_name,
+            "username": clean_username,
+            "first_name": clean_first_name,
             "first_seen": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
+        os.makedirs(os.path.dirname(USERS_FILE), exist_ok=True)
         with open(USERS_FILE, "w", encoding="utf-8") as f:
             json.dump(users, f, ensure_ascii=False, indent=2)
 
@@ -115,7 +136,7 @@ def is_admin(user_id: int) -> bool:
 
 # --- Команда для получения своего ID ---
 async def myid_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Показывает ID пользователя (нужно, чтобы узнать ID админов)"""
+    """Показывает ID пользователя"""
     user = update.effective_user
     await update.message.reply_text(
         f"🆔 *Твой ID:* `{user.id}`\n"
@@ -142,38 +163,49 @@ async def stat_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
                                         parse_mode="Markdown")
         return
 
-    # Формируем список пользователей
+    # Экранируем специальные символы в тексте
+    def escape_markdown(text: str) -> str:
+        """Экранирует специальные символы Markdown"""
+        special_chars = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
+        for char in special_chars:
+            text = text.replace(char, f'\\{char}')
+        return text
+
     user_list = []
     for uid, data in users.items():
-        username = f"@{data['username']}" if data['username'] else "❌ нет username"
-        first_name = data['first_name'] or "❌ нет имени"
+        username = f"@{escape_markdown(data['username'])}" if data['username'] else "❌ нет username"
+        first_name = escape_markdown(data['first_name']) if data['first_name'] else "❌ нет имени"
         first_seen = data['first_seen']
         user_list.append(f"• `{uid}` | {username} | {first_name} | с {first_seen}")
 
-    # Разбиваем на части (Telegram ограничивает длину сообщения)
     all_users_text = "\n".join(user_list)
     total_count = len(users)
 
     header = f"📊 *Статистика бота*\n\n👥 *Всего пользователей:* {total_count}\n\n📋 *Список:*\n\n"
 
-    # Если список слишком длинный, отправляем по частям
-    if len(header + all_users_text) > 4000:
-        await update.message.reply_text(f"📊 *Статистика бота*\n\n👥 *Всего пользователей:* {total_count}",
-                                        parse_mode="Markdown")
-
-        # Отправляем список частями
-        chunk = ""
-        for line in user_list:
-            if len(chunk + line + "\n") > 4000:
+    try:
+        if len(header + all_users_text) > 4000:
+            await update.message.reply_text(f"📊 *Статистика бота*\n\n👥 *Всего пользователей:* {total_count}",
+                                            parse_mode="Markdown")
+            chunk = ""
+            for line in user_list:
+                if len(chunk + line + "\n") > 4000:
+                    await update.message.reply_text(chunk, parse_mode="Markdown")
+                    chunk = line + "\n"
+                else:
+                    chunk += line + "\n"
+            if chunk:
                 await update.message.reply_text(chunk, parse_mode="Markdown")
-                chunk = line + "\n"
-            else:
-                chunk += line + "\n"
-        if chunk:
-            await update.message.reply_text(chunk, parse_mode="Markdown")
-    else:
-        await update.message.reply_text(header + all_users_text, parse_mode="Markdown")
-
+        else:
+            await update.message.reply_text(header + all_users_text, parse_mode="Markdown")
+    except Exception as e:
+        # Если ошибка с парсингом, отправляем без Markdown
+        print(f"Ошибка при отправке статистики: {e}")
+        # Отправляем обычным текстом без форматирования
+        await update.message.reply_text(
+            f"📊 Статистика бота\n\nВсего пользователей: {total_count}\n\nСписок:\n\n" +
+            "\n".join([line.replace('*', '').replace('_', '') for line in user_list])
+        )
 
 # --- Функция для установки команд бота в меню ---
 async def set_commands(application: Application) -> None:
@@ -187,6 +219,35 @@ async def set_commands(application: Application) -> None:
     ]
     await application.bot.set_my_commands(commands)
     print("✅ Команды бота установлены")
+
+
+# --- Функция для отправки подарка (консультация + анкета) ---
+async def send_gift_with_delay(chat_id: int, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет сообщение с подарком (консультация + анкета) через 5 минут"""
+    await asyncio.sleep(DELAY_AFTER_LESSON)
+
+    # Кнопка для заполнения анкеты
+    keyboard = [[InlineKeyboardButton("📝 Заполнить анкету", url=SURVEY_URL)]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    # Отправляем картинку с текстом и кнопкой-ссылкой
+    try:
+        with open(GIFT_IMAGE_PATH, 'rb') as photo:
+            await context.bot.send_photo(
+                chat_id=chat_id,
+                photo=photo,
+                caption=GIFT_MESSAGE_TEXT,
+                parse_mode="Markdown",
+                reply_markup=reply_markup
+            )
+    except FileNotFoundError:
+        # Если картинки нет — отправляем только текст с кнопкой
+        await context.bot.send_message(
+            chat_id=chat_id,
+            text=GIFT_MESSAGE_TEXT,
+            parse_mode="Markdown",
+            reply_markup=reply_markup
+        )
 
 
 # --- Функция для отправки урока с задержкой ---
@@ -217,21 +278,20 @@ async def send_lesson_with_delay(chat_id: int, context: ContextTypes.DEFAULT_TYP
             reply_markup=reply_markup
         )
 
-    # Запускаем таймер для "Как успехи?" (через 30 минут)
+    # Запускаем таймер для отправки подарка через 5 минут
     if chat_id in user_tasks:
-        # Отменяем старую задачу, если есть
         if not user_tasks[chat_id].done():
             user_tasks[chat_id].cancel()
 
     user_tasks[chat_id] = asyncio.create_task(
-        send_how_are_you_with_delay(chat_id, context)
+        send_gift_with_delay(chat_id, context)
     )
 
 
 # --- Функция для отправки "Как успехи?" с задержкой ---
 async def send_how_are_you_with_delay(chat_id: int, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет сообщение "Как успехи?" через 30 минут"""
-    await asyncio.sleep(DELAY_AFTER_LESSON)
+    """Отправляет сообщение "Как успехи?" через 30 минут после подарка"""
+    await asyncio.sleep(DELAY_AFTER_GIFT)
 
     await context.bot.send_message(
         chat_id=chat_id,
@@ -261,7 +321,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     context.user_data["state"] = "start"
 
     # Кнопка «Вперед»
-    keyboard = [[InlineKeyboardButton("👉 Вперед", callback_data=f"forward_menu")]]
+    keyboard = [[InlineKeyboardButton("👉 Вперед", callback_data="forward_menu")]]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     # Пытаемся отправить с картинкой, если есть
@@ -316,7 +376,6 @@ async def forward_menu_callback(update: Update, context: ContextTypes.DEFAULT_TY
 # --- Команда /menu ---
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Показывает главное меню с кнопкой-ссылкой на урок"""
-    # Кнопка-ссылка на YouTube
     keyboard = [[InlineKeyboardButton("🎬 Смотреть урок на YouTube", url=VIDEO_URL)]]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
@@ -344,7 +403,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "/start - Начать заново\n"
         "/menu - Показать главное меню\n"
         "/help - Показать эту справку\n"
-        "/myid - Узнать свой ID (нужно для админов)\n"
+        "/myid - Узнать свой ID\n"
         "/stat - Статистика пользователей (только админы)\n\n"
         "Просто нажимай на кнопки для навигации!"
     )
@@ -386,7 +445,7 @@ def main() -> None:
     # Запускаем бота
     print("🚀 Бот запущен и готов к работе!")
     print("📱 Проверь бота в Telegram")
-    print("⏱️ Тайминги: кружок → 1 минута → урок (с кнопкой-ссылкой) → 30 минут → 'Как успехи?'")
+    print("⏱️ Тайминги: кружок → 1 минута → урок → 5 минут → подарок (анкета) → 30 минут → 'Как успехи?'")
     print(f"👑 Админы ID: {ADMIN_IDS}")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
