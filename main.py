@@ -89,13 +89,20 @@ def load_users() -> dict:
 
 
 def save_user(user_id: int, username: str, first_name: str) -> None:
-    """Сохраняет пользователя в файл"""
+    """Сохраняет пользователя в файл (админы скрываются как 'Разработчик')"""
     users = load_users()
     user_id_str = str(user_id)
 
     if user_id_str not in users:
-        clean_username = username.replace('_', '').replace('*', '') if username else None
-        clean_first_name = first_name.replace('_', '').replace('*', '') if first_name else None
+        # Проверяем, является ли пользователь админом
+        if is_admin(user_id):
+            # Для админов — скрываем реальные данные
+            clean_username = "скрыто"
+            clean_first_name = "Разработчик"
+        else:
+            # Для обычных пользователей — очищаем только спецсимволы
+            clean_username = username.replace('_', '').replace('*', '') if username else None
+            clean_first_name = first_name.replace('_', '').replace('*', '') if first_name else None
 
         users[user_id_str] = {
             "id": user_id,
@@ -106,7 +113,6 @@ def save_user(user_id: int, username: str, first_name: str) -> None:
         os.makedirs(os.path.dirname(USERS_FILE), exist_ok=True)
         with open(USERS_FILE, "w", encoding="utf-8") as f:
             json.dump(users, f, ensure_ascii=False, indent=2)
-
 
 def is_admin(user_id: int) -> bool:
     """Проверяет, является ли пользователь админом"""
