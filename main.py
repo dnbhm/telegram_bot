@@ -13,11 +13,17 @@ load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
 
 # ID администраторов (замени на реальные ID)
-# Чтобы узнать свой ID, отправь боту команду /myid (добавлена ниже)
-ADMIN_IDS = [123456789, 987654321]  # ⚠️ ЗАМЕНИ НА РЕАЛЬНЫЕ ID!
+ADMIN_IDS = [994881050, 759470806]  # ⚠️ ЗАМЕНИ НА РЕАЛЬНЫЕ ID!
 
-# Файл для хранения пользователей
-USERS_FILE = "users.json"
+# --- ПУТЬ К ФАЙЛУ В ПОСТОЯННОМ ХРАНИЛИЩЕ ---
+# Используем /data для Railway/Koyeb, или папку data для локального запуска
+DATA_DIR = os.getenv("DATA_DIR", "/data")  # На хостинге будет /data, локально — ./data
+if not os.path.exists(DATA_DIR):
+    # Если папки /data нет (локальный запуск), создаём папку data в проекте
+    DATA_DIR = "data"
+    os.makedirs(DATA_DIR, exist_ok=True)
+
+USERS_FILE = os.path.join(DATA_DIR, "users.json")
 
 # --- Константы с текстами и ссылками ---
 
