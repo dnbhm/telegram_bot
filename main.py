@@ -89,20 +89,20 @@ def load_users() -> dict:
 
 
 def save_user(user_id: int, username: str, first_name: str) -> None:
-    """Сохраняет пользователя в файл (админы скрываются как 'Разработчик')"""
+    """Сохраняет пользователя в файл (админы не сохраняются)"""
+
+    # Если пользователь админ — НЕ сохраняем в статистику
+    if is_admin(user_id):
+        print(f"👑 Админ {user_id} нажал /start — не сохраняем в статистику")
+        return
+
     users = load_users()
     user_id_str = str(user_id)
 
     if user_id_str not in users:
-        # Проверяем, является ли пользователь админом
-        if is_admin(user_id):
-            # Для админов — скрываем реальные данные
-            clean_username = "Разработчик"
-            clean_first_name = "Разработчик"
-        else:
-            # Для обычных пользователей — очищаем только спецсимволы
-            clean_username = username.replace('_', '').replace('*', '') if username else None
-            clean_first_name = first_name.replace('_', '').replace('*', '') if first_name else None
+        # Для обычных пользователей — очищаем только спецсимволы
+        clean_username = username.replace('_', '').replace('*', '') if username else None
+        clean_first_name = first_name.replace('_', '').replace('*', '') if first_name else None
 
         users[user_id_str] = {
             "id": user_id,
