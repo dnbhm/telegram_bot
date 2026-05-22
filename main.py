@@ -13,7 +13,7 @@ load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
 
 # ID администраторов
-ADMIN_IDS = [994881050, 759470806,885023976]
+ADMIN_IDS = [994881050, 759470806, 885023976]
 
 # --- ПУТЬ К ФАЙЛУ В ПОСТОЯННОМ ХРАНИЛИЩЕ ---
 DATA_DIR = os.getenv("DATA_DIR", "/data")
@@ -70,10 +70,9 @@ LESSON_IMAGE_PATH = "images/lesson_preview.jpg"
 GIFT_IMAGE_PATH = "images/gift_preview.jpg"
 
 # Настройки задержек (в секундах)
-DELAY_AFTER_VIDEO_NOTE = 17  # 1 минута до текста с уроком
-DELAY_AFTER_LESSON = 1800  # 10 минут до сообщения с подарком
+DELAY_AFTER_VIDEO_NOTE = 17
+DELAY_AFTER_LESSON = 1800
 
-# Хранилище задач для отложенных сообщений
 user_tasks = {}
 
 
