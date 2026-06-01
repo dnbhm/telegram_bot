@@ -37,11 +37,10 @@ LESSON_DESCRIPTION_TEXT = (
     "//Разберём, как создавать портфолио, откуда брать работы, чтобы привлекать клиентов\n\n"
     "//И один из самых важных аспектов, который поможет выделяться среди других *«КРЕАТИВ»*🪩\n\n"
     "Обсудим, что такое креатив, откуда его брать и почему за помощью обращаются именно к монтажёру\n\n"
-    "🧁 *Обязательно смотри урок до конца, ведь там тебя ждёт ПОДАРОК, *"
+    "🧁 *Обязательно смотри урок до конца, ведь там тебя ждёт ПОДАРОК,*\n"
     "*который поможет сдвинуться с мёртвой точки и начать расти в сфере монтажа*\n\n"
     "Жми на кнопку ниже и смотри урок 🙂‍↕️"
 )
-
 
 # Сообщение с подарком (через 5 минут после отправки видео)
 GIFT_MESSAGE_TEXT = (
@@ -54,24 +53,31 @@ GIFT_MESSAGE_TEXT = (
     "*Заполняй анкету right nowwww* 👇"
 )
 
-# Ссылка на анкету (Google Forms)
-SURVEY_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeV3hbxukt2k-_9JVf0OyPPJf68ySNcsoB-kZF6NjdeBRDOgQ/viewform?usp=publish-editor"
+# Промо-пост (через 24 часа после урока)
+PROMO_POST_TEXT = (
+    "Лето создано, чтобы начать что-то новое…🍦\n\n"
+    "Всю свою осознанную жизнь я развиваюсь в медиа: от актерского мастерства и журналистики "
+    "до изучения кинематографа — учеба на кинооператора, а теперь то, что дает мне энергию, "
+    "бесконечный креатив, возможности & свободу — МОНТАЖ\n\n"
+    "Если ты хочешь работать в сфере монтажа или выйти на новый уровень, креативить, "
+    "наслаждаться процессом — не думай, а беги смотреть урок💡\n\n"
+    "Потому что там ты узнаешь всё, что нужно, чтобы этим летом реально начать "
+    "заниматься любимым делом⭐️"
+)
 
-# Ссылка на видео (YouTube)
+# Ссылки
+SURVEY_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeV3hbxukt2k-_9JVf0OyPPJf68ySNcsoB-kZF6NjdeBRDOgQ/viewform?usp=publish-editor"
 VIDEO_URL = "https://www.youtube.com/watch?v=7q0tfS3NcJc&feature=youtu.be"
 
-# Путь к кружку (video note)
+# Пути к файлам
 VIDEO_NOTE_PATH = "video_notes/welcome.mp4"
-
-# Путь к картинке с описанием урока
 LESSON_IMAGE_PATH = "images/lesson_preview.jpg"
-
-# Путь к картинке для сообщения с подарком
 GIFT_IMAGE_PATH = "images/gift_preview.jpg"
 
 # Настройки задержек (в секундах)
-DELAY_AFTER_VIDEO_NOTE = 17
-DELAY_AFTER_LESSON = 1800
+DELAY_AFTER_VIDEO_NOTE = 17      # 17 секунд до урока
+DELAY_AFTER_LESSON = 1800        # 5 минут до подарка
+DELAY_AFTER_GIFT = 86400         # 24 часа до промо-поста
 
 user_tasks = {}
 
@@ -89,8 +95,6 @@ def load_users() -> dict:
 
 def save_user(user_id: int, username: str, first_name: str) -> None:
     """Сохраняет пользователя в файл (админы не сохраняются)"""
-
-    # Если пользователь админ — НЕ сохраняем в статистику
     if is_admin(user_id):
         print(f"👑 Админ {user_id} нажал /start — не сохраняем в статистику")
         return
@@ -99,7 +103,6 @@ def save_user(user_id: int, username: str, first_name: str) -> None:
     user_id_str = str(user_id)
 
     if user_id_str not in users:
-        # Для обычных пользователей — очищаем только спецсимволы
         clean_username = username.replace('_', '').replace('*', '') if username else None
         clean_first_name = first_name.replace('_', '').replace('*', '') if first_name else None
 
@@ -112,6 +115,7 @@ def save_user(user_id: int, username: str, first_name: str) -> None:
         os.makedirs(os.path.dirname(USERS_FILE), exist_ok=True)
         with open(USERS_FILE, "w", encoding="utf-8") as f:
             json.dump(users, f, ensure_ascii=False, indent=2)
+
 
 def is_admin(user_id: int) -> bool:
     """Проверяет, является ли пользователь админом"""
@@ -225,11 +229,31 @@ async def send_gift_with_delay(chat_id: int, context: ContextTypes.DEFAULT_TYPE)
             parse_mode="Markdown",
             reply_markup=reply_markup
         )
-    # Всё, больше ничего не запускаем
+
+
+# --- Функция для отправки промо-поста новым пользователям через 24 часа ---
+async def send_promo_to_new_user(chat_id: int, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет промо-пост новому пользователю через 24 часа после урока"""
+    await asyncio.sleep(DELAY_AFTER_GIFT)
+
+    keyboard = [[InlineKeyboardButton("🎬 Смотреть урок на YouTube", url=VIDEO_URL)]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    try:
+        await context.bot.send_message(
+            chat_id=chat_id,
+            text=PROMO_POST_TEXT,
+            parse_mode="Markdown",
+            reply_markup=reply_markup
+        )
+        print(f"📨 Промо-пост отправлен новому пользователю {chat_id} через 24 часа")
+    except Exception as e:
+        print(f"❌ Ошибка при отправке промо-поста пользователю {chat_id}: {e}")
+
 
 # --- Функция для отправки урока с задержкой ---
 async def send_lesson_with_delay(chat_id: int, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет текст с уроком через 1 минуту"""
+    """Отправляет текст с уроком через 17 секунд"""
     await asyncio.sleep(DELAY_AFTER_VIDEO_NOTE)
 
     keyboard = [[InlineKeyboardButton("🎬 Смотреть урок на YouTube", url=VIDEO_URL)]]
@@ -261,6 +285,16 @@ async def send_lesson_with_delay(chat_id: int, context: ContextTypes.DEFAULT_TYP
         send_gift_with_delay(chat_id, context)
     )
 
+    # Запускаем таймер для отправки промо-поста через 24 часа
+    promo_task_key = f"promo_{chat_id}"
+    if promo_task_key in user_tasks:
+        if not user_tasks[promo_task_key].done():
+            user_tasks[promo_task_key].cancel()
+
+    user_tasks[promo_task_key] = asyncio.create_task(
+        send_promo_to_new_user(chat_id, context)
+    )
+
 
 # --- Команда /start (без приветственного сообщения) ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -279,6 +313,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             user_tasks[user_id].cancel()
         del user_tasks[user_id]
 
+    promo_key = f"promo_{user_id}"
+    if promo_key in user_tasks:
+        if not user_tasks[promo_key].done():
+            user_tasks[promo_key].cancel()
+        del user_tasks[promo_key]
+
     context.user_data["state"] = "start"
 
     # Отправляем кружок сразу
@@ -292,7 +332,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         print("⚠️ Кружок не найден")
         await update.message.reply_text("🎬 *Подготавливаю урок...*", parse_mode="Markdown")
 
-    # Запускаем таймер для урока через 1 минуту
+    # Запускаем таймер для урока через 17 секунд
     user_tasks[user_id] = asyncio.create_task(
         send_lesson_with_delay(chat_id, context)
     )
@@ -335,6 +375,58 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await update.message.reply_text(help_text, parse_mode="Markdown")
 
 
+# --- ВРЕМЕННАЯ КОМАНДА ДЛЯ РАССЫЛКИ СТАРЫМ ПОЛЬЗОВАТЕЛЯМ (удалить после использования) ---
+async def send_promo_to_all(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет промо-пост всем существующим пользователям (только админы)"""
+    user_id = update.effective_user.id
+
+    if not is_admin(user_id):
+        await update.message.reply_text("⛔ *Доступ запрещён!*\nЭта команда только для администраторов.",
+                                        parse_mode="Markdown")
+        return
+
+    users = load_users()
+
+    if not users:
+        await update.message.reply_text("📭 Нет пользователей для рассылки")
+        return
+
+    await update.message.reply_text(f"📢 Начинаю рассылку {len(users)} пользователям...")
+
+    keyboard = [[InlineKeyboardButton("🎬 Смотреть урок на YouTube", url=VIDEO_URL)]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    success_count = 0
+    fail_count = 0
+
+    for user_id_str, user_data in users.items():
+        uid = int(user_id_str)
+
+        if is_admin(uid):
+            continue
+
+        try:
+            await context.bot.send_message(
+                chat_id=uid,
+                text=PROMO_POST_TEXT,
+                parse_mode="Markdown",
+                reply_markup=reply_markup
+            )
+            success_count += 1
+            print(f"✅ Отправлено пользователю {user_data.get('first_name', uid)}")
+            await asyncio.sleep(0.05)
+
+        except Exception as e:
+            fail_count += 1
+            print(f"❌ Ошибка при отправке {uid}: {e}")
+
+    await update.message.reply_text(
+        f"✅ Рассылка завершена!\n\n"
+        f"📤 Успешно: {success_count}\n"
+        f"❌ Ошибок: {fail_count}"
+    )
+
+
 # --- Обработчик для любых сообщений ---
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Отвечает на любые текстовые сообщения, кроме команд"""
@@ -356,11 +448,12 @@ def main() -> None:
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("myid", myid_command))
     application.add_handler(CommandHandler("stat", stat_command))
+    application.add_handler(CommandHandler("sendpromo", send_promo_to_all))  # Временная команда
 
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
     print("🚀 Бот запущен и готов к работе!")
-    print("⏱️ Тайминги: кружок → 1 минута → урок → 5 минут → подарок (анкета) → 30 минут → 'Как успехи?'")
+    print("⏱️ Тайминги: кружок → 17 сек → урок → 5 мин → подарок → 24 часа → промо-пост")
     print(f"👑 Админы ID: {ADMIN_IDS}")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
