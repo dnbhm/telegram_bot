@@ -191,7 +191,6 @@ async def stat_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         )
 
 
-# --- Функция для установки команд бота в меню ---
 async def set_commands(application: Application) -> None:
     """Устанавливает команды в меню бота"""
     commands = [
@@ -200,10 +199,10 @@ async def set_commands(application: Application) -> None:
         BotCommand("help", "Помощь"),
         BotCommand("myid", "Узнать свой ID"),
         BotCommand("stat", "Статистика (только админы)"),
+        BotCommand("sendpromo", "📢 Рассылка промо-поста (только админы)"),
     ]
     await application.bot.set_my_commands(commands)
     print("✅ Команды бота установлены")
-
 
 # --- Функция для отправки подарка (консультация + анкета) ---
 async def send_gift_with_delay(chat_id: int, context: ContextTypes.DEFAULT_TYPE) -> None:
