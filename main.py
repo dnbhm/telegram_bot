@@ -270,7 +270,8 @@ async def set_commands(application: Application) -> None:
         BotCommand("help", "Помощь"),
         BotCommand("myid", "Узнать свой ID"),
         BotCommand("stat", "Статистика (только админы)"),
-        BotCommand("sendcases", "📨 Рассылка кейсов всем пользователям (только админы)"),
+        #BotCommand("sendcases", "📨 Рассылка кейсов всем пользователям (только админы)"),
+        BotCommand("testcases", "🧪 Тестовая отправка кейсов (только админу)"),
     ]
     await application.bot.set_my_commands(commands)
     print("✅ Команды бота установлены")
@@ -589,6 +590,56 @@ async def send_cases_to_all(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 
     # Запускаем таймер для второго кейса через 30 минут
     asyncio.create_task(send_case2_to_all(context, users, success_count, fail_count, update.message.chat_id))
+
+
+# --- ТЕСТОВАЯ КОМАНДА ДЛЯ ПРОВЕРКИ ФОРМАТИРОВАНИЯ ---
+async def test_cases(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет тестовые кейсы только тому, кто вызвал команду (для проверки форматирования)"""
+    user_id = update.effective_user.id
+
+    if not is_admin(user_id):
+        await update.message.reply_text("⛔ *Доступ запрещён!*\nЭта команда только для администраторов.",
+                                        parse_mode="Markdown")
+        return
+
+    await update.message.reply_text(
+        "🧪 *Тестовая рассылка*\n\nОтправляю кейсы только вам для проверки форматирования...",
+        parse_mode="Markdown")
+
+    # Отправляем первый кейс
+    try:
+        with open(CASE1_IMAGE_PATH, 'rb') as photo:
+            await update.message.reply_photo(
+                photo=photo,
+                caption=CASE1_TEXT,
+                parse_mode="Markdown"
+            )
+    except FileNotFoundError:
+        await update.message.reply_text(
+            f"📷 *Картинка pic1.jpg не найдена*\n\n{CASE1_TEXT}",
+            parse_mode="Markdown"
+        )
+
+    await asyncio.sleep(1)  # пауза 1 секунда между сообщениями
+
+    # Отправляем второй кейс
+    try:
+        with open(CASE2_IMAGE_PATH, 'rb') as photo:
+            await update.message.reply_photo(
+                photo=photo,
+                caption=CASE2_TEXT,
+                parse_mode="Markdown"
+            )
+    except FileNotFoundError:
+        await update.message.reply_text(
+            f"📷 *Картинка pic2.jpg не найдена*\n\n{CASE2_TEXT}",
+            parse_mode="Markdown"
+        )
+
+    await update.message.reply_text("✅ *Тестовая рассылка завершена!*\n\n"
+                                    "Проверьте форматирование текста и картинки.\n"
+                                    "Если всё хорошо, используйте команду /sendcases для массовой рассылки.",
+                                    parse_mode="Markdown")
 
 
 async def send_case2_to_all(context: ContextTypes.DEFAULT_TYPE, users: dict, success_count: int, fail_count: int,
