@@ -350,11 +350,23 @@ async def send_case1_to_user(chat_id: int, context: ContextTypes.DEFAULT_TYPE) -
     await asyncio.sleep(DELAY_AFTER_PROMO)
 
     try:
-        # Сначала отправляем картинку
+        # Разбиваем текст на части
+        case1_parts = split_long_text(CASE1_TEXT, 1024)
+
+        # Отправляем картинку с первой частью
         with open(CASE1_IMAGE_PATH, 'rb') as photo:
-            await context.bot.send_photo(chat_id=chat_id, photo=photo)
-        # Затем отправляем текст
-        await context.bot.send_message(chat_id=chat_id, text=CASE1_TEXT, parse_mode="Markdown")
+            await context.bot.send_photo(
+                chat_id=chat_id,
+                photo=photo,
+                caption=case1_parts[0],
+                parse_mode="Markdown"
+            )
+
+        # Отправляем остальные части
+        for part in case1_parts[1:]:
+            await context.bot.send_message(chat_id=chat_id, text=part, parse_mode="Markdown")
+            await asyncio.sleep(0.3)
+
     except FileNotFoundError:
         await context.bot.send_message(chat_id=chat_id, text=CASE1_TEXT, parse_mode="Markdown")
 
@@ -376,11 +388,20 @@ async def send_case2_to_user(chat_id: int, context: ContextTypes.DEFAULT_TYPE) -
     await asyncio.sleep(DELAY_BETWEEN_CASES)
 
     try:
-        # Сначала отправляем картинку
+        case2_parts = split_long_text(CASE2_TEXT, 1024)
+
         with open(CASE2_IMAGE_PATH, 'rb') as photo:
-            await context.bot.send_photo(chat_id=chat_id, photo=photo)
-        # Затем отправляем текст
-        await context.bot.send_message(chat_id=chat_id, text=CASE2_TEXT, parse_mode="Markdown")
+            await context.bot.send_photo(
+                chat_id=chat_id,
+                photo=photo,
+                caption=case2_parts[0],
+                parse_mode="Markdown"
+            )
+
+        for part in case2_parts[1:]:
+            await context.bot.send_message(chat_id=chat_id, text=part, parse_mode="Markdown")
+            await asyncio.sleep(0.3)
+
     except FileNotFoundError:
         await context.bot.send_message(chat_id=chat_id, text=CASE2_TEXT, parse_mode="Markdown")
 
@@ -522,6 +543,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     )
     await update.message.reply_text(help_text, parse_mode="Markdown")
 
+
 async def send_cases_to_all(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Отправляет первый кейс сразу всем, второй через 30 минут (только админы)"""
     user_id = update.effective_user.id
@@ -551,17 +573,29 @@ async def send_cases_to_all(update: Update, context: ContextTypes.DEFAULT_TYPE) 
             continue
 
         try:
-            # Отправляем первый кейс: сначала картинка, потом текст
+            case1_parts = split_long_text(CASE1_TEXT, 1024)
+
+            # Отправляем картинку с первой частью
             try:
                 with open(CASE1_IMAGE_PATH, 'rb') as photo:
-                    await context.bot.send_photo(chat_id=uid, photo=photo)
-                await context.bot.send_message(chat_id=uid, text=CASE1_TEXT, parse_mode="Markdown")
+                    await context.bot.send_photo(
+                        chat_id=uid,
+                        photo=photo,
+                        caption=case1_parts[0],
+                        parse_mode="Markdown"
+                    )
+
+                # Отправляем остальные части
+                for part in case1_parts[1:]:
+                    await context.bot.send_message(chat_id=uid, text=part, parse_mode="Markdown")
+                    await asyncio.sleep(0.2)
+
             except FileNotFoundError:
                 await context.bot.send_message(chat_id=uid, text=CASE1_TEXT, parse_mode="Markdown")
 
             success_count += 1
             print(f"✅ Первый кейс отправлен пользователю {user_data.get('first_name', uid)}")
-            await asyncio.sleep(0.3)  # небольшая задержка между пользователями
+            await asyncio.sleep(0.3)
 
         except Exception as e:
             fail_count += 1
@@ -578,7 +612,6 @@ async def send_cases_to_all(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     asyncio.create_task(send_case2_to_all(context, users, success_count, fail_count, update.message.chat_id))
 
 
-# --- ТЕСТОВАЯ КОМАНДА ДЛЯ ПРОВЕРКИ ФОРМАТИРОВАНИЯ ---
 async def test_cases(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Отправляет тестовые кейсы только тому, кто вызвал команду (для проверки форматирования)"""
     user_id = update.effective_user.id
@@ -592,21 +625,44 @@ async def test_cases(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         "🧪 *Тестовая рассылка*\n\nОтправляю кейсы только вам для проверки форматирования...",
         parse_mode="Markdown")
 
-    # Отправляем первый кейс (сначала картинка, потом текст)
+    # --- Отправка первого кейса ---
     try:
+        # Разбиваем текст кейса на части (если нужно)
+        case1_parts = split_long_text(CASE1_TEXT, 1024)
+
+        # Отправляем картинку с первой частью текста
         with open(CASE1_IMAGE_PATH, 'rb') as photo:
-            await update.message.reply_photo(photo=photo)
-        await update.message.reply_text(CASE1_TEXT, parse_mode="Markdown")
+            await update.message.reply_photo(
+                photo=photo,
+                caption=case1_parts[0],
+                parse_mode="Markdown"
+            )
+
+        # Если есть ещё части, отправляем их как обычные сообщения
+        for part in case1_parts[1:]:
+            await update.message.reply_text(part, parse_mode="Markdown")
+            await asyncio.sleep(0.5)
+
     except FileNotFoundError:
         await update.message.reply_text(CASE1_TEXT, parse_mode="Markdown")
 
-    await asyncio.sleep(1)  # пауза 1 секунда между кейсами
+    await asyncio.sleep(1)  # пауза между кейсами
 
-    # Отправляем второй кейс (сначала картинка, потом текст)
+    # --- Отправка второго кейса ---
     try:
+        case2_parts = split_long_text(CASE2_TEXT, 1024)
+
         with open(CASE2_IMAGE_PATH, 'rb') as photo:
-            await update.message.reply_photo(photo=photo)
-        await update.message.reply_text(CASE2_TEXT, parse_mode="Markdown")
+            await update.message.reply_photo(
+                photo=photo,
+                caption=case2_parts[0],
+                parse_mode="Markdown"
+            )
+
+        for part in case2_parts[1:]:
+            await update.message.reply_text(part, parse_mode="Markdown")
+            await asyncio.sleep(0.5)
+
     except FileNotFoundError:
         await update.message.reply_text(CASE2_TEXT, parse_mode="Markdown")
 
@@ -615,6 +671,31 @@ async def test_cases(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
                                     "Если всё хорошо, используйте команду /sendcases для массовой рассылки.",
                                     parse_mode="Markdown")
 
+
+def split_long_text(text: str, max_length: int = 1024) -> list:
+    """Разбивает длинный текст на части, не разрывая слова"""
+    if len(text) <= max_length:
+        return [text]
+
+    parts = []
+    lines = text.split('\n')
+    current_part = ""
+
+    for line in lines:
+        if len(current_part) + len(line) + 1 <= max_length:
+            if current_part:
+                current_part += '\n' + line
+            else:
+                current_part = line
+        else:
+            if current_part:
+                parts.append(current_part)
+            current_part = line
+
+    if current_part:
+        parts.append(current_part)
+
+    return parts
 
 async def send_case2_to_all(context: ContextTypes.DEFAULT_TYPE, users: dict, success_count: int, fail_count: int,
                             admin_chat_id: int) -> None:
