@@ -716,7 +716,7 @@ def main() -> None:
     application.add_handler(CommandHandler("myid", myid_command))
     application.add_handler(CommandHandler("stat", stat_command))
     application.add_handler(CommandHandler("sendcases", send_cases_to_all))
-
+    application.add_handler(CommandHandler("testcases", test_cases))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
     print("🚀 Бот запущен и готов к работе!")
