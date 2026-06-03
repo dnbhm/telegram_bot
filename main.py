@@ -335,25 +335,18 @@ async def send_promo_to_new_user(chat_id: int, context: ContextTypes.DEFAULT_TYP
         print(f"❌ Ошибка при отправке промо-поста пользователю {chat_id}: {e}")
 
 
-# --- Функция для отправки первого кейса новому пользователю ---
 async def send_case1_to_user(chat_id: int, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Отправляет первый кейс через 30 минут после промо-поста"""
     await asyncio.sleep(DELAY_AFTER_PROMO)
 
     try:
+        # Сначала отправляем картинку
         with open(CASE1_IMAGE_PATH, 'rb') as photo:
-            await context.bot.send_photo(
-                chat_id=chat_id,
-                photo=photo,
-                caption=CASE1_TEXT,
-                parse_mode="Markdown"
-            )
+            await context.bot.send_photo(chat_id=chat_id, photo=photo)
+        # Затем отправляем текст
+        await context.bot.send_message(chat_id=chat_id, text=CASE1_TEXT, parse_mode="Markdown")
     except FileNotFoundError:
-        await context.bot.send_message(
-            chat_id=chat_id,
-            text=CASE1_TEXT,
-            parse_mode="Markdown"
-        )
+        await context.bot.send_message(chat_id=chat_id, text=CASE1_TEXT, parse_mode="Markdown")
 
     print(f"📨 Первый кейс отправлен пользователю {chat_id}")
 
@@ -368,25 +361,18 @@ async def send_case1_to_user(chat_id: int, context: ContextTypes.DEFAULT_TYPE) -
     )
 
 
-# --- Функция для отправки второго кейса новому пользователю ---
 async def send_case2_to_user(chat_id: int, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Отправляет второй кейс через 30 минут после первого"""
     await asyncio.sleep(DELAY_BETWEEN_CASES)
 
     try:
+        # Сначала отправляем картинку
         with open(CASE2_IMAGE_PATH, 'rb') as photo:
-            await context.bot.send_photo(
-                chat_id=chat_id,
-                photo=photo,
-                caption=CASE2_TEXT,
-                parse_mode="Markdown"
-            )
+            await context.bot.send_photo(chat_id=chat_id, photo=photo)
+        # Затем отправляем текст
+        await context.bot.send_message(chat_id=chat_id, text=CASE2_TEXT, parse_mode="Markdown")
     except FileNotFoundError:
-        await context.bot.send_message(
-            chat_id=chat_id,
-            text=CASE2_TEXT,
-            parse_mode="Markdown"
-        )
+        await context.bot.send_message(chat_id=chat_id, text=CASE2_TEXT, parse_mode="Markdown")
 
     print(f"📨 Второй кейс отправлен пользователю {chat_id}")
 
@@ -526,8 +512,6 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     )
     await update.message.reply_text(help_text, parse_mode="Markdown")
 
-
-# --- КОМАНДА ДЛЯ РАССЫЛКИ КЕЙСОВ ВСЕМ ПОЛЬЗОВАТЕЛЯМ ---
 async def send_cases_to_all(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Отправляет первый кейс сразу всем, второй через 30 минут (только админы)"""
     user_id = update.effective_user.id
@@ -557,21 +541,13 @@ async def send_cases_to_all(update: Update, context: ContextTypes.DEFAULT_TYPE) 
             continue
 
         try:
-            # Отправляем первый кейс сразу
+            # Отправляем первый кейс: сначала картинка, потом текст
             try:
                 with open(CASE1_IMAGE_PATH, 'rb') as photo:
-                    await context.bot.send_photo(
-                        chat_id=uid,
-                        photo=photo,
-                        caption=CASE1_TEXT,
-                        parse_mode="Markdown"
-                    )
+                    await context.bot.send_photo(chat_id=uid, photo=photo)
+                await context.bot.send_message(chat_id=uid, text=CASE1_TEXT, parse_mode="Markdown")
             except FileNotFoundError:
-                await context.bot.send_message(
-                    chat_id=uid,
-                    text=CASE1_TEXT,
-                    parse_mode="Markdown"
-                )
+                await context.bot.send_message(chat_id=uid, text=CASE1_TEXT, parse_mode="Markdown")
 
             success_count += 1
             print(f"✅ Первый кейс отправлен пользователю {user_data.get('first_name', uid)}")
@@ -606,35 +582,23 @@ async def test_cases(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         "🧪 *Тестовая рассылка*\n\nОтправляю кейсы только вам для проверки форматирования...",
         parse_mode="Markdown")
 
-    # Отправляем первый кейс
+    # Отправляем первый кейс (сначала картинка, потом текст)
     try:
         with open(CASE1_IMAGE_PATH, 'rb') as photo:
-            await update.message.reply_photo(
-                photo=photo,
-                caption=CASE1_TEXT,
-                parse_mode="Markdown"
-            )
+            await update.message.reply_photo(photo=photo)
+        await update.message.reply_text(CASE1_TEXT, parse_mode="Markdown")
     except FileNotFoundError:
-        await update.message.reply_text(
-            f"📷 *Картинка pic1.jpg не найдена*\n\n{CASE1_TEXT}",
-            parse_mode="Markdown"
-        )
+        await update.message.reply_text(CASE1_TEXT, parse_mode="Markdown")
 
-    await asyncio.sleep(1)  # пауза 1 секунда между сообщениями
+    await asyncio.sleep(1)  # пауза 1 секунда между кейсами
 
-    # Отправляем второй кейс
+    # Отправляем второй кейс (сначала картинка, потом текст)
     try:
         with open(CASE2_IMAGE_PATH, 'rb') as photo:
-            await update.message.reply_photo(
-                photo=photo,
-                caption=CASE2_TEXT,
-                parse_mode="Markdown"
-            )
+            await update.message.reply_photo(photo=photo)
+        await update.message.reply_text(CASE2_TEXT, parse_mode="Markdown")
     except FileNotFoundError:
-        await update.message.reply_text(
-            f"📷 *Картинка pic2.jpg не найдена*\n\n{CASE2_TEXT}",
-            parse_mode="Markdown"
-        )
+        await update.message.reply_text(CASE2_TEXT, parse_mode="Markdown")
 
     await update.message.reply_text("✅ *Тестовая рассылка завершена!*\n\n"
                                     "Проверьте форматирование текста и картинки.\n"
@@ -657,21 +621,13 @@ async def send_case2_to_all(context: ContextTypes.DEFAULT_TYPE, users: dict, suc
             continue
 
         try:
-            # Отправляем второй кейс
+            # Отправляем второй кейс: сначала картинка, потом текст
             try:
                 with open(CASE2_IMAGE_PATH, 'rb') as photo:
-                    await context.bot.send_photo(
-                        chat_id=uid,
-                        photo=photo,
-                        caption=CASE2_TEXT,
-                        parse_mode="Markdown"
-                    )
+                    await context.bot.send_photo(chat_id=uid, photo=photo)
+                await context.bot.send_message(chat_id=uid, text=CASE2_TEXT, parse_mode="Markdown")
             except FileNotFoundError:
-                await context.bot.send_message(
-                    chat_id=uid,
-                    text=CASE2_TEXT,
-                    parse_mode="Markdown"
-                )
+                await context.bot.send_message(chat_id=uid, text=CASE2_TEXT, parse_mode="Markdown")
 
             success2_count += 1
             print(f"✅ Второй кейс отправлен пользователю {user_data.get('first_name', uid)}")
