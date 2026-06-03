@@ -199,10 +199,10 @@ async def set_commands(application: Application) -> None:
         BotCommand("help", "Помощь"),
         BotCommand("myid", "Узнать свой ID"),
         BotCommand("stat", "Статистика (только админы)"),
-        BotCommand("sendpromo", "📢 Рассылка промо-поста (только админы)"),
     ]
     await application.bot.set_my_commands(commands)
     print("✅ Команды бота установлены")
+
 
 # --- Функция для отправки подарка (консультация + анкета) ---
 async def send_gift_with_delay(chat_id: int, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -374,58 +374,6 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await update.message.reply_text(help_text, parse_mode="Markdown")
 
 
-# --- ВРЕМЕННАЯ КОМАНДА ДЛЯ РАССЫЛКИ СТАРЫМ ПОЛЬЗОВАТЕЛЯМ (удалить после использования) ---
-async def send_promo_to_all(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет промо-пост всем существующим пользователям (только админы)"""
-    user_id = update.effective_user.id
-
-    if not is_admin(user_id):
-        await update.message.reply_text("⛔ *Доступ запрещён!*\nЭта команда только для администраторов.",
-                                        parse_mode="Markdown")
-        return
-
-    users = load_users()
-
-    if not users:
-        await update.message.reply_text("📭 Нет пользователей для рассылки")
-        return
-
-    await update.message.reply_text(f"📢 Начинаю рассылку {len(users)} пользователям...")
-
-    keyboard = [[InlineKeyboardButton("🎬 Смотреть урок на YouTube", url=VIDEO_URL)]]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    success_count = 0
-    fail_count = 0
-
-    for user_id_str, user_data in users.items():
-        uid = int(user_id_str)
-
-        if is_admin(uid):
-            continue
-
-        try:
-            await context.bot.send_message(
-                chat_id=uid,
-                text=PROMO_POST_TEXT,
-                parse_mode="Markdown",
-                reply_markup=reply_markup
-            )
-            success_count += 1
-            print(f"✅ Отправлено пользователю {user_data.get('first_name', uid)}")
-            await asyncio.sleep(0.05)
-
-        except Exception as e:
-            fail_count += 1
-            print(f"❌ Ошибка при отправке {uid}: {e}")
-
-    await update.message.reply_text(
-        f"✅ Рассылка завершена!\n\n"
-        f"📤 Успешно: {success_count}\n"
-        f"❌ Ошибок: {fail_count}"
-    )
-
-
 # --- Обработчик для любых сообщений ---
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Отвечает на любые текстовые сообщения, кроме команд"""
@@ -447,7 +395,6 @@ def main() -> None:
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("myid", myid_command))
     application.add_handler(CommandHandler("stat", stat_command))
-    application.add_handler(CommandHandler("sendpromo", send_promo_to_all))  # Временная команда
 
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
