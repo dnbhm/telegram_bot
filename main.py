@@ -65,7 +65,7 @@ PROMO_POST_TEXT = (
     "заниматься любимым делом⭐️"
 )
 
-# Только второй кейс (Лиза)
+# Второй кейс (Лиза)
 CASE2_TEXT = (
     "<b>смонтировать рилс – это одно, а перестать бояться, что ты плохой монтажёр – совсем другое</b>🙂‍↕️\n\n"
     "ко мне на обучение пришла ученица Лиза (@elzavettta)\n\n"
@@ -97,7 +97,7 @@ CASE2_IMAGE_PATH = "images/pic2.jpg"
 DELAY_AFTER_VIDEO_NOTE = 17  # 17 секунд до урока
 DELAY_AFTER_LESSON = 1800  # 5 минут до подарка
 DELAY_AFTER_GIFT = 86400  # 24 часа до промо-поста
-DELAY_AFTER_GIFT_FOR_CASE2 = 1800  # 30 минут после подарка для второго кейса
+DELAY_AFTER_PROMO = 1800  # 30 минут после промо-поста до второго кейса
 
 user_tasks = {}
 
@@ -251,21 +251,11 @@ async def send_gift_with_delay(chat_id: int, context: ContextTypes.DEFAULT_TYPE)
             reply_markup=reply_markup
         )
 
-    # Запускаем таймер для отправки второго кейса через 30 минут
-    case2_key = f"case2_{chat_id}"
-    if case2_key in user_tasks:
-        if not user_tasks[case2_key].done():
-            user_tasks[case2_key].cancel()
-
-    user_tasks[case2_key] = asyncio.create_task(
-        send_case2_to_new_user(chat_id, context)
-    )
-
 
 # --- Функция для отправки второго кейса новым пользователям ---
 async def send_case2_to_new_user(chat_id: int, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет второй кейс новому пользователю через 30 минут после подарка"""
-    await asyncio.sleep(DELAY_AFTER_GIFT_FOR_CASE2)
+    """Отправляет второй кейс новому пользователю через 30 минут после промо-поста"""
+    await asyncio.sleep(DELAY_AFTER_PROMO)
 
     try:
         with open(CASE2_IMAGE_PATH, 'rb') as photo:
@@ -278,7 +268,7 @@ async def send_case2_to_new_user(chat_id: int, context: ContextTypes.DEFAULT_TYP
     except FileNotFoundError:
         await context.bot.send_message(chat_id=chat_id, text=CASE2_TEXT, parse_mode="HTML")
 
-    print(f"📨 Второй кейс отправлен новому пользователю {chat_id} через 30 минут после подарка")
+    print(f"📨 Второй кейс отправлен новому пользователю {chat_id} через 30 минут после промо-поста")
 
 
 # --- Функция для отправки промо-поста новым пользователям через 24 часа ---
@@ -297,6 +287,17 @@ async def send_promo_to_new_user(chat_id: int, context: ContextTypes.DEFAULT_TYP
             reply_markup=reply_markup
         )
         print(f"📨 Промо-пост отправлен новому пользователю {chat_id} через 24 часа")
+
+        # Запускаем таймер для отправки второго кейса через 30 минут после промо-поста
+        case2_key = f"case2_{chat_id}"
+        if case2_key in user_tasks:
+            if not user_tasks[case2_key].done():
+                user_tasks[case2_key].cancel()
+
+        user_tasks[case2_key] = asyncio.create_task(
+            send_case2_to_new_user(chat_id, context)
+        )
+
     except Exception as e:
         print(f"❌ Ошибка при отправке промо-поста пользователю {chat_id}: {e}")
 
@@ -534,7 +535,7 @@ def main() -> None:
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
     print("🚀 Бот запущен и готов к работе!")
-    print("⏱️ Тайминги: кружок → 17 сек → урок → 5 мин → подарок → 30 мин → второй кейс → 24 часа → промо-пост")
+    print("⏱️ Тайминги: кружок → 17 сек → урок → 5 мин → подарок → 24 часа → промо-пост → 30 мин → второй кейс")
     print(f"👑 Админы ID: {ADMIN_IDS}")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
