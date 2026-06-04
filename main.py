@@ -65,28 +65,7 @@ PROMO_POST_TEXT = (
     "заниматься любимым делом⭐️"
 )
 
-CASE1_TEXT = (
-    "«Обучение стало лучшим вложением в 2026 году, потому что спустя 3 месяца я вышла на доход 130к в месяц» 🪩\n\n"
-    "Моя ученица Алиса уже во время обучения начала зарабатывать больше 100к\n\n"
-    "<b>До обучения:</b>\n"
-    "> // полноценно работала монтажёром, но делала интуитивно\n"
-    "> // доход 50–70к в месяц\n"
-    "> // не всегда понимала как создавать анимационные эффекты\n"
-    "> // не делала горизонтальный формат\n"
-    "> // творческий кризис\n\n"
-    "Зарабатывать на монтаже - не сложно, если понимать, как формируется твой заработок🙂‍↕️\n\n"
-    "<b>Из чего строился доход у Алисы:</b>\n"
-    "> // пакет 28к (8 роликов по 3500)\n"
-    "> // пакет 35к (7 роликов по 5000)\n"
-    "> // UGC-клиент ~30-35к\n"
-    "> // 3 ютуб ролика ~21к\n"
-    "> // посты для клиентов ~15к\n"
-    "> // = ~130к\n\n"
-    "Правда: два-три постоянных клиента и это уже стабильные 50-80к в месяц, не надо каждый раз искать новых 🙌\n\n"
-    "<b>Во время обучения:</b>\n"
-    "> // научилась цветокоррекции в Davinci\n"
-)
-
+# Только второй кейс (Лиза)
 CASE2_TEXT = (
     "<b>смонтировать рилс – это одно, а перестать бояться, что ты плохой монтажёр – совсем другое</b>🙂‍↕️\n\n"
     "ко мне на обучение пришла ученица Лиза (@elzavettta)\n\n"
@@ -112,15 +91,13 @@ VIDEO_URL = "https://www.youtube.com/watch?v=7q0tfS3NcJc&feature=youtu.be"
 VIDEO_NOTE_PATH = "video_notes/welcome.mp4"
 LESSON_IMAGE_PATH = "images/lesson_preview.jpg"
 GIFT_IMAGE_PATH = "images/gift_preview.jpg"
-CASE1_IMAGE_PATH = "images/pic1.jpg"
 CASE2_IMAGE_PATH = "images/pic2.jpg"
 
 # Настройки задержек (в секундах)
 DELAY_AFTER_VIDEO_NOTE = 17  # 17 секунд до урока
 DELAY_AFTER_LESSON = 1800  # 5 минут до подарка
 DELAY_AFTER_GIFT = 86400  # 24 часа до промо-поста
-DELAY_AFTER_PROMO = 1800  # 30 минут после промо-поста до первого кейса
-DELAY_BETWEEN_CASES = 1800  # 30 минут между кейсами
+DELAY_AFTER_GIFT_FOR_CASE2 = 1800  # 30 минут после подарка для второго кейса
 
 user_tasks = {}
 
@@ -242,8 +219,8 @@ async def set_commands(application: Application) -> None:
         BotCommand("help", "Помощь"),
         BotCommand("myid", "Узнать свой ID"),
         BotCommand("stat", "Статистика (только админы)"),
-        #BotCommand("sendcases", "📨 Рассылка кейсов всем пользователям (только админы)"),
-        BotCommand("testcases", "🧪 Тестовая отправка кейсов (только админу)"),
+        BotCommand("testcases", "🧪 Тестовая отправка кейса (только админу)"),
+        BotCommand("sendcase2", "📨 Отправить второй кейс всем пользователям"),
     ]
     await application.bot.set_my_commands(commands)
     print("✅ Команды бота установлены")
@@ -274,6 +251,35 @@ async def send_gift_with_delay(chat_id: int, context: ContextTypes.DEFAULT_TYPE)
             reply_markup=reply_markup
         )
 
+    # Запускаем таймер для отправки второго кейса через 30 минут
+    case2_key = f"case2_{chat_id}"
+    if case2_key in user_tasks:
+        if not user_tasks[case2_key].done():
+            user_tasks[case2_key].cancel()
+
+    user_tasks[case2_key] = asyncio.create_task(
+        send_case2_to_new_user(chat_id, context)
+    )
+
+
+# --- Функция для отправки второго кейса новым пользователям ---
+async def send_case2_to_new_user(chat_id: int, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет второй кейс новому пользователю через 30 минут после подарка"""
+    await asyncio.sleep(DELAY_AFTER_GIFT_FOR_CASE2)
+
+    try:
+        with open(CASE2_IMAGE_PATH, 'rb') as photo:
+            await context.bot.send_photo(
+                chat_id=chat_id,
+                photo=photo,
+                caption=CASE2_TEXT,
+                parse_mode="HTML"
+            )
+    except FileNotFoundError:
+        await context.bot.send_message(chat_id=chat_id, text=CASE2_TEXT, parse_mode="HTML")
+
+    print(f"📨 Второй кейс отправлен новому пользователю {chat_id} через 30 минут после подарка")
+
 
 # --- Функция для отправки промо-поста новым пользователям через 24 часа ---
 async def send_promo_to_new_user(chat_id: int, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -291,83 +297,8 @@ async def send_promo_to_new_user(chat_id: int, context: ContextTypes.DEFAULT_TYP
             reply_markup=reply_markup
         )
         print(f"📨 Промо-пост отправлен новому пользователю {chat_id} через 24 часа")
-
-        # После промо-поста запускаем цепочку кейсов
-        # Первый кейс через 30 минут
-        case1_task_key = f"case1_{chat_id}"
-        if case1_task_key in user_tasks:
-            if not user_tasks[case1_task_key].done():
-                user_tasks[case1_task_key].cancel()
-
-        user_tasks[case1_task_key] = asyncio.create_task(
-            send_case1_to_user(chat_id, context)
-        )
-
     except Exception as e:
         print(f"❌ Ошибка при отправке промо-поста пользователю {chat_id}: {e}")
-
-
-async def send_case1_to_user(chat_id: int, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет первый кейс через 30 минут после промо-поста"""
-    await asyncio.sleep(DELAY_AFTER_PROMO)
-
-    try:
-        # Разбиваем текст на части
-        case1_parts = split_long_text(CASE1_TEXT, 1024)
-
-        # Отправляем картинку с первой частью
-        with open(CASE1_IMAGE_PATH, 'rb') as photo:
-            await context.bot.send_photo(
-                chat_id=chat_id,
-                photo=photo,
-                caption=case1_parts[0],
-                parse_mode="Markdown"
-            )
-
-        # Отправляем остальные части
-        for part in case1_parts[1:]:
-            await context.bot.send_message(chat_id=chat_id, text=part, parse_mode="Markdown")
-            await asyncio.sleep(0.3)
-
-    except FileNotFoundError:
-        await context.bot.send_message(chat_id=chat_id, text=CASE1_TEXT, parse_mode="Markdown")
-
-    print(f"📨 Первый кейс отправлен пользователю {chat_id}")
-
-    # Запускаем таймер для второго кейса через 30 минут
-    case2_task_key = f"case2_{chat_id}"
-    if case2_task_key in user_tasks:
-        if not user_tasks[case2_task_key].done():
-            user_tasks[case2_task_key].cancel()
-
-    user_tasks[case2_task_key] = asyncio.create_task(
-        send_case2_to_user(chat_id, context)
-    )
-
-
-async def send_case2_to_user(chat_id: int, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет второй кейс через 30 минут после первого"""
-    await asyncio.sleep(DELAY_BETWEEN_CASES)
-
-    try:
-        case2_parts = split_long_text(CASE2_TEXT, 1024)
-
-        with open(CASE2_IMAGE_PATH, 'rb') as photo:
-            await context.bot.send_photo(
-                chat_id=chat_id,
-                photo=photo,
-                caption=case2_parts[0],
-                parse_mode="Markdown"
-            )
-
-        for part in case2_parts[1:]:
-            await context.bot.send_message(chat_id=chat_id, text=part, parse_mode="Markdown")
-            await asyncio.sleep(0.3)
-
-    except FileNotFoundError:
-        await context.bot.send_message(chat_id=chat_id, text=CASE2_TEXT, parse_mode="Markdown")
-
-    print(f"📨 Второй кейс отправлен пользователю {chat_id}")
 
 
 # --- Функция для отправки урока с задержкой ---
@@ -438,12 +369,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             user_tasks[promo_key].cancel()
         del user_tasks[promo_key]
 
-    case1_key = f"case1_{user_id}"
-    if case1_key in user_tasks:
-        if not user_tasks[case1_key].done():
-            user_tasks[case1_key].cancel()
-        del user_tasks[case1_key]
-
     case2_key = f"case2_{user_id}"
     if case2_key in user_tasks:
         if not user_tasks[case2_key].done():
@@ -506,8 +431,34 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await update.message.reply_text(help_text, parse_mode="Markdown")
 
 
-async def send_cases_to_all(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет первый кейс сразу всем, второй через 30 минут (только админы)"""
+# --- ТЕСТОВАЯ КОМАНДА ДЛЯ ПРОВЕРКИ ---
+async def test_cases(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет тестовый кейс только админу"""
+    user_id = update.effective_user.id
+
+    if not is_admin(user_id):
+        await update.message.reply_text("⛔ Доступ запрещён!")
+        return
+
+    await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю второй кейс только вам...")
+
+    try:
+        with open(CASE2_IMAGE_PATH, 'rb') as photo:
+            await update.message.reply_photo(
+                photo=photo,
+                caption=CASE2_TEXT,
+                parse_mode="HTML"
+            )
+    except FileNotFoundError:
+        await update.message.reply_text("❌ Фото pic2.jpg не найдено")
+        await update.message.reply_text(CASE2_TEXT, parse_mode="HTML")
+
+    await update.message.reply_text("✅ Готово!")
+
+
+# --- КОМАНДА ДЛЯ РАССЫЛКИ ВТОРОГО КЕЙСА ВСЕМ ПОЛЬЗОВАТЕЛЯМ ---
+async def send_case2_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет второй кейс всем существующим пользователям (только админы)"""
     user_id = update.effective_user.id
 
     if not is_admin(user_id):
@@ -521,9 +472,7 @@ async def send_cases_to_all(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         await update.message.reply_text("📭 Нет пользователей для рассылки")
         return
 
-    await update.message.reply_text(f"📢 Начинаю рассылку кейсов {len(users)} пользователям...\n"
-                                    f"📤 Первый кейс отправляется сейчас\n"
-                                    f"⏰ Второй кейс отправится через 30 минут")
+    await update.message.reply_text(f"📢 Начинаю рассылку второго кейса {len(users)} пользователям...")
 
     success_count = 0
     fail_count = 0
@@ -535,150 +484,26 @@ async def send_cases_to_all(update: Update, context: ContextTypes.DEFAULT_TYPE) 
             continue
 
         try:
-            case1_parts = split_long_text(CASE1_TEXT, 1024)
-
-            # Отправляем картинку с первой частью
-            try:
-                with open(CASE1_IMAGE_PATH, 'rb') as photo:
-                    await context.bot.send_photo(
-                        chat_id=uid,
-                        photo=photo,
-                        caption=case1_parts[0],
-                        parse_mode="Markdown"
-                    )
-
-                # Отправляем остальные части
-                for part in case1_parts[1:]:
-                    await context.bot.send_message(chat_id=uid, text=part, parse_mode="Markdown")
-                    await asyncio.sleep(0.2)
-
-            except FileNotFoundError:
-                await context.bot.send_message(chat_id=uid, text=CASE1_TEXT, parse_mode="Markdown")
+            with open(CASE2_IMAGE_PATH, 'rb') as photo:
+                await context.bot.send_photo(
+                    chat_id=uid,
+                    photo=photo,
+                    caption=CASE2_TEXT,
+                    parse_mode="HTML"
+                )
 
             success_count += 1
-            print(f"✅ Первый кейс отправлен пользователю {user_data.get('first_name', uid)}")
-            await asyncio.sleep(0.3)
-
-        except Exception as e:
-            fail_count += 1
-            print(f"❌ Ошибка при отправке первого кейса пользователю {uid}: {e}")
-
-    await update.message.reply_text(
-        f"✅ Первая часть рассылки завершена!\n\n"
-        f"📤 Успешно: {success_count}\n"
-        f"❌ Ошибок: {fail_count}\n\n"
-        f"⏰ Через 30 минут начнётся отправка второго кейса..."
-    )
-
-    # Запускаем таймер для второго кейса через 30 минут
-    asyncio.create_task(send_case2_to_all(context, users, success_count, fail_count, update.message.chat_id))
-
-
-async def test_cases(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет тестовые кейсы только админу"""
-    user_id = update.effective_user.id
-
-    if not is_admin(user_id):
-        await update.message.reply_text("⛔ Доступ запрещён!")
-        return
-
-    await update.message.reply_text("🧪 Тестовая рассылка\n\nОтправляю кейсы только вам...")
-
-    # Первый кейс
-    try:
-        with open(CASE1_IMAGE_PATH, 'rb') as photo:
-            await update.message.reply_photo(
-                photo=photo,
-                caption=CASE1_TEXT,
-                parse_mode="HTML"  # <-- ИСПОЛЬЗУЕМ HTML
-            )
-    except FileNotFoundError:
-        await update.message.reply_text("❌ Фото pic1.jpg не найдено")
-        await update.message.reply_text(CASE1_TEXT, parse_mode="HTML")
-
-    await asyncio.sleep(1)
-
-    # Второй кейс
-    try:
-        with open(CASE2_IMAGE_PATH, 'rb') as photo:
-            await update.message.reply_photo(
-                photo=photo,
-                caption=CASE2_TEXT,
-                parse_mode="HTML"  # <-- ИСПОЛЬЗУЕМ HTML
-            )
-    except FileNotFoundError:
-        await update.message.reply_text("❌ Фото pic2.jpg не найдено")
-        await update.message.reply_text(CASE2_TEXT, parse_mode="HTML")
-
-    await update.message.reply_text("✅ Готово!")
-
-
-def split_long_text(text: str, max_length: int = 1024) -> list:
-    """Разбивает длинный текст на части, не разрывая слова"""
-    if len(text) <= max_length:
-        return [text]
-
-    parts = []
-    lines = text.split('\n')
-    current_part = ""
-
-    for line in lines:
-        if len(current_part) + len(line) + 1 <= max_length:
-            if current_part:
-                current_part += '\n' + line
-            else:
-                current_part = line
-        else:
-            if current_part:
-                parts.append(current_part)
-            current_part = line
-
-    if current_part:
-        parts.append(current_part)
-
-    return parts
-
-async def send_case2_to_all(context: ContextTypes.DEFAULT_TYPE, users: dict, success_count: int, fail_count: int,
-                            admin_chat_id: int) -> None:
-    """Отправляет второй кейс всем пользователям через 30 минут"""
-    await asyncio.sleep(DELAY_BETWEEN_CASES)
-
-    success2_count = 0
-    fail2_count = 0
-
-    for user_id_str, user_data in users.items():
-        uid = int(user_id_str)
-
-        if is_admin(uid):
-            continue
-
-        try:
-            # Отправляем второй кейс: сначала картинка, потом текст
-            try:
-                with open(CASE2_IMAGE_PATH, 'rb') as photo:
-                    await context.bot.send_photo(chat_id=uid, photo=photo)
-                await context.bot.send_message(chat_id=uid, text=CASE2_TEXT, parse_mode="Markdown")
-            except FileNotFoundError:
-                await context.bot.send_message(chat_id=uid, text=CASE2_TEXT, parse_mode="Markdown")
-
-            success2_count += 1
             print(f"✅ Второй кейс отправлен пользователю {user_data.get('first_name', uid)}")
             await asyncio.sleep(0.3)
 
         except Exception as e:
-            fail2_count += 1
-            print(f"❌ Ошибка при отправке второго кейса пользователю {uid}: {e}")
+            fail_count += 1
+            print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
 
-    # Отправляем отчёт админу
-    await context.bot.send_message(
-        chat_id=admin_chat_id,
-        text=f"✅ *Вторая часть рассылки завершена!*\n\n"
-             f"📤 Успешно: {success2_count}\n"
-             f"❌ Ошибок: {fail2_count}\n\n"
-             f"📊 *Итого:*\n"
-             f"Первый кейс: +{success_count} / -{fail_count}\n"
-             f"Второй кейс: +{success2_count} / -{fail2_count}",
-        parse_mode="Markdown"
+    await update.message.reply_text(
+        f"✅ Рассылка второго кейса завершена!\n\n"
+        f"📤 Успешно: {success_count}\n"
+        f"❌ Ошибок: {fail_count}"
     )
 
 
@@ -703,13 +528,13 @@ def main() -> None:
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("myid", myid_command))
     application.add_handler(CommandHandler("stat", stat_command))
-    application.add_handler(CommandHandler("sendcases", send_cases_to_all))
     application.add_handler(CommandHandler("testcases", test_cases))
+    application.add_handler(CommandHandler("sendcase2", send_case2_to_existing_users))
+
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
     print("🚀 Бот запущен и готов к работе!")
-    print("⏱️ Тайминги: кружок → 17 сек → урок → 5 мин → подарок → 24 часа → промо-пост")
-    print("⏱️ → 30 мин → первый кейс → 30 мин → второй кейс")
+    print("⏱️ Тайминги: кружок → 17 сек → урок → 5 мин → подарок → 30 мин → второй кейс → 24 часа → промо-пост")
     print(f"👑 Админы ID: {ADMIN_IDS}")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
