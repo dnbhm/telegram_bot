@@ -5,6 +5,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, BotCommand
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes, MessageHandler, filters
+from telegram.request import HTTPXRequest
 
 # Загружаем переменные окружения из .env файла
 load_dotenv()
@@ -118,7 +119,6 @@ VIDEO_URL = "https://www.youtube.com/watch?v=7q0tfS3NcJc&feature=youtu.be"
 # Пути к файлам
 VIDEO_NOTE_PATH = "video_notes/welcome.mp4"
 LESSON_IMAGE_PATH = "images/lesson_preview.jpg"
-GIFT_IMAGE_PATH = "images/gift_preview.jpg"
 CASE1_IMAGE_PATH = "images/pic1.jpg"
 CASE2_IMAGE_PATH = "images/pic2.jpg"
 
@@ -266,22 +266,12 @@ async def send_gift_with_delay(chat_id: int, context: ContextTypes.DEFAULT_TYPE)
     keyboard = [[InlineKeyboardButton("📝 Заполнить анкету", url=SURVEY_URL)]]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    try:
-        with open(GIFT_IMAGE_PATH, 'rb') as photo:
-            await context.bot.send_photo(
-                chat_id=chat_id,
-                photo=photo,
-                caption=GIFT_MESSAGE_TEXT,
-                parse_mode="Markdown",
-                reply_markup=reply_markup
-            )
-    except FileNotFoundError:
-        await context.bot.send_message(
-            chat_id=chat_id,
-            text=GIFT_MESSAGE_TEXT,
-            parse_mode="Markdown",
-            reply_markup=reply_markup
-        )
+    await context.bot.send_message(
+        chat_id=chat_id,
+        text=GIFT_MESSAGE_TEXT,
+        parse_mode="Markdown",
+        reply_markup=reply_markup
+    )
 
 
 # --- Функции для отправки кейсов новым пользователям ---
@@ -299,6 +289,8 @@ async def send_case1_to_new_user(chat_id: int, context: ContextTypes.DEFAULT_TYP
             )
     except FileNotFoundError:
         await context.bot.send_message(chat_id=chat_id, text=CASE1_TEXT, parse_mode="HTML")
+    except Exception as e:
+        print(f"❌ Ошибка при отправке кейса Алисы пользователю {chat_id}: {e}")
 
     print(f"📨 Кейс Алисы отправлен новому пользователю {chat_id} через 30 минут после промо-поста")
 
@@ -327,6 +319,8 @@ async def send_case2_to_new_user(chat_id: int, context: ContextTypes.DEFAULT_TYP
             )
     except FileNotFoundError:
         await context.bot.send_message(chat_id=chat_id, text=CASE2_TEXT, parse_mode="HTML")
+    except Exception as e:
+        print(f"❌ Ошибка при отправке кейса Лизы пользователю {chat_id}: {e}")
 
     print(f"📨 Кейс Лизы отправлен новому пользователю {chat_id} через 30 минут после кейса Алисы")
 
@@ -664,7 +658,15 @@ def main() -> None:
     if not TOKEN:
         raise ValueError("BOT_TOKEN не найден. Создай файл .env и добавь BOT_TOKEN=твой_токен")
 
-    application = Application.builder().token(TOKEN).build()
+    # Увеличиваем таймауты для избежания ConnectTimeout
+    request = HTTPXRequest(
+        connect_timeout=30.0,
+        read_timeout=30.0,
+        write_timeout=30.0,
+        pool_timeout=30.0
+    )
+
+    application = Application.builder().token(TOKEN).request(request).build()
     application.post_init = set_commands
 
     application.add_handler(CommandHandler("start", start))
