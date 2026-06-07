@@ -123,11 +123,11 @@ CASE1_IMAGE_PATH = "images/pic1.jpg"
 CASE2_IMAGE_PATH = "images/pic2.jpg"
 
 # Настройки задержек (в секундах)
-DELAY_AFTER_VIDEO_NOTE = 17  # 17 секунд до урока
-DELAY_AFTER_LESSON = 1800  # 5 минут до подарка
-DELAY_AFTER_GIFT = 86400  # 24 часа до промо-поста
-DELAY_AFTER_PROMO = 1800  # 30 минут после промо-поста до первого кейса
-DELAY_BETWEEN_CASES = 1800  # 30 минут между кейсами
+DELAY_AFTER_VIDEO_NOTE = 17      # 17 секунд до урока
+DELAY_AFTER_LESSON = 1800        # 5 минут до подарка
+DELAY_AFTER_GIFT = 86400         # 24 часа до промо-поста
+DELAY_AFTER_PROMO = 1800         # 30 минут после промо-поста до первого кейса
+DELAY_BETWEEN_CASES = 1800       # 30 минут между кейсами
 
 user_tasks = {}
 
@@ -249,10 +249,6 @@ async def set_commands(application: Application) -> None:
         BotCommand("help", "Помощь"),
         BotCommand("myid", "Узнать свой ID"),
         BotCommand("stat", "Статистика (только админы)"),
-        BotCommand("testcase1", "🧪 Тест кейса Алисы"),
-        BotCommand("testcase2", "🧪 Тест кейса Лизы"),
-        BotCommand("sendcase1", "📨 Отправить кейс Алисы всем"),
-        BotCommand("sendcase2", "📨 Отправить кейс Лизы всем"),
     ]
     await application.bot.set_my_commands(commands)
     print("✅ Команды бота установлены")
@@ -486,163 +482,10 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "/menu - Показать главное меню\n"
         "/help - Показать эту справку\n"
         "/myid - Узнать свой ID\n"
-        "/stat - Статистика пользователей (только админы)\n"
-        "/testcase1 - Тест кейса Алисы\n"
-        "/testcase2 - Тест кейса Лизы\n"
-        "/sendcase1 - Отправить кейс Алисы всем\n"
-        "/sendcase2 - Отправить кейс Лизы всем"
+        "/stat - Статистика пользователей (только админы)\n\n"
+        "Просто нажимай на кнопки для навигации!"
     )
     await update.message.reply_text(help_text, parse_mode="Markdown")
-
-
-# --- ТЕСТОВЫЕ КОМАНДЫ ДЛЯ ПРОВЕРКИ ---
-async def test_case1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет тестовый кейс Алисы только админу"""
-    user_id = update.effective_user.id
-
-    if not is_admin(user_id):
-        await update.message.reply_text("⛔ Доступ запрещён!")
-        return
-
-    await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю кейс Алисы только вам...")
-
-    try:
-        with open(CASE1_IMAGE_PATH, 'rb') as photo:
-            await update.message.reply_photo(
-                photo=photo,
-                caption=CASE1_TEXT,
-                parse_mode="HTML"
-            )
-    except FileNotFoundError:
-        await update.message.reply_text("❌ Фото pic1.jpg не найдено")
-        await update.message.reply_text(CASE1_TEXT, parse_mode="HTML")
-
-    await update.message.reply_text("✅ Готово!")
-
-
-async def test_case2(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет тестовый кейс Лизы только админу"""
-    user_id = update.effective_user.id
-
-    if not is_admin(user_id):
-        await update.message.reply_text("⛔ Доступ запрещён!")
-        return
-
-    await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю кейс Лизы только вам...")
-
-    try:
-        with open(CASE2_IMAGE_PATH, 'rb') as photo:
-            await update.message.reply_photo(
-                photo=photo,
-                caption=CASE2_TEXT,
-                parse_mode="HTML"
-            )
-    except FileNotFoundError:
-        await update.message.reply_text("❌ Фото pic2.jpg не найдено")
-        await update.message.reply_text(CASE2_TEXT, parse_mode="HTML")
-
-    await update.message.reply_text("✅ Готово!")
-
-
-# --- КОМАНДЫ ДЛЯ РАССЫЛКИ КЕЙСОВ ВСЕМ ПОЛЬЗОВАТЕЛЯМ ---
-async def send_case1_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет первый кейс всем существующим пользователям (только админы)"""
-    user_id = update.effective_user.id
-
-    if not is_admin(user_id):
-        await update.message.reply_text("⛔ *Доступ запрещён!*\nЭта команда только для администраторов.",
-                                        parse_mode="Markdown")
-        return
-
-    users = load_users()
-
-    if not users:
-        await update.message.reply_text("📭 Нет пользователей для рассылки")
-        return
-
-    await update.message.reply_text(f"📢 Начинаю рассылку кейса Алисы {len(users)} пользователям...")
-
-    success_count = 0
-    fail_count = 0
-
-    for user_id_str, user_data in users.items():
-        uid = int(user_id_str)
-
-        if is_admin(uid):
-            continue
-
-        try:
-            with open(CASE1_IMAGE_PATH, 'rb') as photo:
-                await context.bot.send_photo(
-                    chat_id=uid,
-                    photo=photo,
-                    caption=CASE1_TEXT,
-                    parse_mode="HTML"
-                )
-
-            success_count += 1
-            print(f"✅ Кейс Алисы отправлен пользователю {user_data.get('first_name', uid)}")
-            await asyncio.sleep(0.3)
-
-        except Exception as e:
-            fail_count += 1
-            print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
-
-    await update.message.reply_text(
-        f"✅ Рассылка кейса Алисы завершена!\n\n"
-        f"📤 Успешно: {success_count}\n"
-        f"❌ Ошибок: {fail_count}"
-    )
-
-
-async def send_case2_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет второй кейс всем существующим пользователям (только админы)"""
-    user_id = update.effective_user.id
-
-    if not is_admin(user_id):
-        await update.message.reply_text("⛔ *Доступ запрещён!*\nЭта команда только для администраторов.",
-                                        parse_mode="Markdown")
-        return
-
-    users = load_users()
-
-    if not users:
-        await update.message.reply_text("📭 Нет пользователей для рассылки")
-        return
-
-    await update.message.reply_text(f"📢 Начинаю рассылку кейса Лизы {len(users)} пользователям...")
-
-    success_count = 0
-    fail_count = 0
-
-    for user_id_str, user_data in users.items():
-        uid = int(user_id_str)
-
-        if is_admin(uid):
-            continue
-
-        try:
-            with open(CASE2_IMAGE_PATH, 'rb') as photo:
-                await context.bot.send_photo(
-                    chat_id=uid,
-                    photo=photo,
-                    caption=CASE2_TEXT,
-                    parse_mode="HTML"
-                )
-
-            success_count += 1
-            print(f"✅ Кейс Лизы отправлен пользователю {user_data.get('first_name', uid)}")
-            await asyncio.sleep(0.3)
-
-        except Exception as e:
-            fail_count += 1
-            print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
-
-    await update.message.reply_text(
-        f"✅ Рассылка кейса Лизы завершена!\n\n"
-        f"📤 Успешно: {success_count}\n"
-        f"❌ Ошибок: {fail_count}"
-    )
 
 
 # --- Обработчик для любых сообщений ---
@@ -674,16 +517,11 @@ def main() -> None:
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("myid", myid_command))
     application.add_handler(CommandHandler("stat", stat_command))
-    application.add_handler(CommandHandler("testcase1", test_case1))
-    application.add_handler(CommandHandler("testcase2", test_case2))
-    application.add_handler(CommandHandler("sendcase1", send_case1_to_existing_users))
-    application.add_handler(CommandHandler("sendcase2", send_case2_to_existing_users))
 
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
     print("🚀 Бот запущен и готов к работе!")
-    print(
-        "⏱️ Тайминги: кружок → 17 сек → урок → 5 мин → подарок → 24 часа → промо-пост → 30 мин → кейс Алисы → 30 мин → кейс Лизы")
+    print("⏱️ Тайминги: кружок → 17 сек → урок → 5 мин → подарок → 24 часа → промо-пост → 30 мин → кейс Алисы → 30 мин → кейс Лизы")
     print(f"👑 Админы ID: {ADMIN_IDS}")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
