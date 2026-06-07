@@ -66,6 +66,29 @@ PROMO_POST_TEXT = (
     "заниматься любимым делом⭐️"
 )
 
+# Пост Vision Summer Club (отправляется через 1 час после кейсов)
+VISION_CLUB_TEXT = (
+    "<b>та самая летняя неделя, когда вы точно захотите оставить свои дела и начать творить</b>🍦\n\n"
+    "<b>Vision Summer Club</b>\n\n"
+    "я знаю, что многие хотели бы себя попробовать в сфере монтажа, узнать новые фишки, "
+    "погрузиться в атмосферу обучения и у вас есть эта возможность 🛼\n\n"
+    "я создала бесплатный интенсив «Vision Summer Club», где всю неделю мы будем вдохновляться, "
+    "творить, поддерживать друг друга, расти в монтаже\n\n"
+    "<b>интенсив пройдёт с 8 по 13 июня, давайте посмотрим, что вас ждёт:</b>\n\n"
+    "<b>// 1 день: папка монтажёра</b> – как организовать рабочее пространство, познакомлю вас с концепцией будущего проекта\n\n"
+    "<b>// 2 день: кинематографический монтаж</b> – разбор кино-языка — Феллини, Соррентино и другие\n\n"
+    "<b>// 3 день: вертикальный монтаж</b> – как кинокадр живёт в рилсе, работа со звуком, ритм, пространство\n\n"
+    "<b>// 4 день: анимационный монтаж</b> — техника stop motion & ее интеграция в вертикальный формат\n\n"
+    "<b>// 5 день: личный бренд и клиенты</b> — как через один ролик раскрывать личность в блоге & поговорим про поиск клиентов\n\n"
+    "<b>// 6 день: приятный бонус от меня</b>, который поможет ещё больше расти в монтаже\n\n"
+    "за 5 дней у вас будет возможность создать свой ролик с 0: от выбора кино-фрагмента до готового рилса с анимацией\n\n"
+    "<b>этот интенсив я создавала с одной мыслью:</b>\n\n"
+    "чтобы каждый смог уйти с новыми знаниями и желанием расти дальше: неважно, новичок ты или уже действующий монтажёр, "
+    "потому что мы будем разбирать приёмы, фишки, смыслы, искать вдохновение, креативить и обязательно поговорим про клиентов\n\n"
+    "<b>вы можете попасть на обучение совершенно бесплатно, присоединяйтесь по ссылке, я вас буду ждать⬇️</b>\n\n"
+    "<b><a href='https://t.me/+8cSWBiyep6FiN2Ri'>Vision Summer Club</a></b>"
+)
+
 # Первый кейс (Алиса)
 CASE1_TEXT = (
     "<b>«Обучение стало лучшим вложением в 2026 году, потому что спустя 3 месяца я вышла на доход 130к в месяц»</b> 🪩\n\n"
@@ -128,6 +151,7 @@ DELAY_AFTER_LESSON = 1800        # 5 минут до подарка
 DELAY_AFTER_GIFT = 86400         # 24 часа до промо-поста
 DELAY_AFTER_PROMO = 1800         # 30 минут после промо-поста до первого кейса
 DELAY_BETWEEN_CASES = 1800       # 30 минут между кейсами
+DELAY_AFTER_CASE2 = 3600         # 1 час после второго кейса до поста Vision Club
 
 user_tasks = {}
 
@@ -249,6 +273,8 @@ async def set_commands(application: Application) -> None:
         BotCommand("help", "Помощь"),
         BotCommand("myid", "Узнать свой ID"),
         BotCommand("stat", "Статистика (только админы)"),
+        BotCommand("testvision", "🧪 Тест поста Vision Summer Club"),
+        BotCommand("sendvision", "📨 Отправить Vision Summer Club всем"),
     ]
     await application.bot.set_my_commands(commands)
     print("✅ Команды бота установлены")
@@ -319,6 +345,32 @@ async def send_case2_to_new_user(chat_id: int, context: ContextTypes.DEFAULT_TYP
         print(f"❌ Ошибка при отправке кейса Лизы пользователю {chat_id}: {e}")
 
     print(f"📨 Кейс Лизы отправлен новому пользователю {chat_id} через 30 минут после кейса Алисы")
+
+    # Запускаем таймер для отправки поста Vision Summer Club через 1 час
+    vision_key = f"vision_{chat_id}"
+    if vision_key in user_tasks:
+        if not user_tasks[vision_key].done():
+            user_tasks[vision_key].cancel()
+
+    user_tasks[vision_key] = asyncio.create_task(
+        send_vision_to_new_user(chat_id, context)
+    )
+
+
+async def send_vision_to_new_user(chat_id: int, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет пост Vision Summer Club новому пользователю через 1 час после второго кейса"""
+    await asyncio.sleep(DELAY_AFTER_CASE2)
+
+    try:
+        await context.bot.send_message(
+            chat_id=chat_id,
+            text=VISION_CLUB_TEXT,
+            parse_mode="HTML",
+            disable_web_page_preview=False
+        )
+        print(f"📨 Пост Vision Summer Club отправлен новому пользователю {chat_id} через 1 час после кейса Лизы")
+    except Exception as e:
+        print(f"❌ Ошибка при отправке Vision Summer Club пользователю {chat_id}: {e}")
 
 
 # --- Функция для отправки промо-поста новым пользователям через 24 часа ---
@@ -432,6 +484,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             user_tasks[case2_key].cancel()
         del user_tasks[case2_key]
 
+    vision_key = f"vision_{user_id}"
+    if vision_key in user_tasks:
+        if not user_tasks[vision_key].done():
+            user_tasks[vision_key].cancel()
+        del user_tasks[vision_key]
+
     context.user_data["state"] = "start"
 
     # Отправляем кружок сразу
@@ -482,10 +540,84 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "/menu - Показать главное меню\n"
         "/help - Показать эту справку\n"
         "/myid - Узнать свой ID\n"
-        "/stat - Статистика пользователей (только админы)\n\n"
-        "Просто нажимай на кнопки для навигации!"
+        "/stat - Статистика пользователей (только админы)\n"
+        "/testvision - Тест поста Vision Summer Club\n"
+        "/sendvision - Отправить Vision Summer Club всем пользователям"
     )
     await update.message.reply_text(help_text, parse_mode="Markdown")
+
+
+# --- ТЕСТОВАЯ КОМАНДА ДЛЯ ПРОВЕРКИ ПОСТА VISION CLUB ---
+async def test_vision(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет тестовый пост Vision Summer Club только админу"""
+    user_id = update.effective_user.id
+
+    if not is_admin(user_id):
+        await update.message.reply_text("⛔ Доступ запрещён!")
+        return
+
+    await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю пост Vision Summer Club только вам...")
+
+    try:
+        await update.message.reply_text(
+            text=VISION_CLUB_TEXT,
+            parse_mode="HTML",
+            disable_web_page_preview=False
+        )
+    except Exception as e:
+        await update.message.reply_text(f"❌ Ошибка: {e}")
+
+    await update.message.reply_text("✅ Готово!")
+
+
+# --- КОМАНДА ДЛЯ РАССЫЛКИ VISION CLUB ВСЕМ ПОЛЬЗОВАТЕЛЯМ ---
+async def send_vision_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет пост Vision Summer Club всем существующим пользователям (только админы)"""
+    user_id = update.effective_user.id
+
+    if not is_admin(user_id):
+        await update.message.reply_text("⛔ *Доступ запрещён!*\nЭта команда только для администраторов.",
+                                        parse_mode="Markdown")
+        return
+
+    users = load_users()
+
+    if not users:
+        await update.message.reply_text("📭 Нет пользователей для рассылки")
+        return
+
+    await update.message.reply_text(f"📢 Начинаю рассылку Vision Summer Club {len(users)} пользователям...")
+
+    success_count = 0
+    fail_count = 0
+
+    for user_id_str, user_data in users.items():
+        uid = int(user_id_str)
+
+        if is_admin(uid):
+            continue
+
+        try:
+            await context.bot.send_message(
+                chat_id=uid,
+                text=VISION_CLUB_TEXT,
+                parse_mode="HTML",
+                disable_web_page_preview=False
+            )
+
+            success_count += 1
+            print(f"✅ Vision Club отправлен пользователю {user_data.get('first_name', uid)}")
+            await asyncio.sleep(0.3)
+
+        except Exception as e:
+            fail_count += 1
+            print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
+
+    await update.message.reply_text(
+        f"✅ Рассылка Vision Summer Club завершена!\n\n"
+        f"📤 Успешно: {success_count}\n"
+        f"❌ Ошибок: {fail_count}"
+    )
 
 
 # --- Обработчик для любых сообщений ---
@@ -517,11 +649,13 @@ def main() -> None:
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("myid", myid_command))
     application.add_handler(CommandHandler("stat", stat_command))
+    application.add_handler(CommandHandler("testvision", test_vision))
+    application.add_handler(CommandHandler("sendvision", send_vision_to_existing_users))
 
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
     print("🚀 Бот запущен и готов к работе!")
-    print("⏱️ Тайминги: кружок → 17 сек → урок → 5 мин → подарок → 24 часа → промо-пост → 30 мин → кейс Алисы → 30 мин → кейс Лизы")
+    print("⏱️ Тайминги: кружок → 17 сек → урок → 5 мин → подарок → 24 часа → промо-пост → 30 мин → кейс Алисы → 30 мин → кейс Лизы → 1 час → Vision Summer Club")
     print(f"👑 Админы ID: {ADMIN_IDS}")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
