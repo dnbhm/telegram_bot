@@ -158,7 +158,7 @@ CASE2_TEXT = (
 # Ссылки
 SURVEY_URL = "https://docs.google.com/forms/d/e/1FAIpQLSe97sBgl1xuY6THBZjw4tENB5rDZSN8IQ46fpGC7mTer_cD8g/viewform?usp=header"
 VIDEO_URL = "https://www.youtube.com/watch?v=7q0tfS3NcJc&feature=youtu.be"
-ZOOM_URL = "https://us06web.zoom.us/j/1234567890"  # ЗАМЕНИТЕ НА РЕАЛЬНУЮ ССЫЛКУ
+ZOOM_URL = "https://us06web.zoom.us/j/84069642341?pwd=MZIjhlbMuDsCF3hrcPbBIgmnbozoAD.1"  # ЗАМЕНИТЕ НА РЕАЛЬНУЮ ССЫЛКУ
 
 # Пути к файлам
 VIDEO_NOTE_PATH = "video_notes/welcome.mp4"
