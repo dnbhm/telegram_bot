@@ -89,6 +89,28 @@ VISION_CLUB_TEXT = (
     "<b><a href='https://t.me/+8cSWBiyep6FiN2Ri'>Vision Summer Club</a></b>"
 )
 
+# Пост Вебинар
+WEBINAR_TEXT = (
+    "<b>ВЕБИНАР ЭТИМ ЛЕТНИМ ДНЁМ 🛼</b>\n\n"
+    "Вас ждёт эфир на тему: <b>«Как стать востребованным монтажёром уже этим летом»</b>🍦\n\n"
+    "<b>Что разберём на вебинаре:</b>\n\n"
+    "// кто такой монтажёр?\n"
+    "разберём, какие задачи решает монтажёр, куда можно расти и на что делать упор\n\n"
+    "// виды монтажа: поговорим про горизонтальный и вертикальный монтаж\n\n"
+    "// расскажу, как рассчитать свою заработную плату и выйти на 100-150к в месяц\n\n"
+    "// как создавать портфолио: откуда брать работы, если нет ещё клиентов? как оформить портфолио, чтобы оно продавало\n\n"
+    "// где брать вдохновение и креатив? Обсудим, что такое креатив монтажа и как вдохновляться не только на Pinterest\n\n"
+    "// открытие продаж на моё обучение «Vision Мастерская»\n\n"
+    "<b>РАЗБОР ВАШИХ РАБОТ ОТ МЕНЯ🪩</b>\n\n"
+    "я выберу несколько ваших работ из анкеты и разберу в прямом эфире, где поделюсь своим мнением🍦\n\n"
+    "<b>Встречаемся уже в СЕГОДНЯ в 18:00 по МСК</b>\n\n"
+    "Переходи по ссылке, чтобы участвовать на вебинаре и не забудь заполнить анкету на разбор, если хочешь получить комментарии от меня\n\n"
+    "<b>⭐️⭐️⭐️ССЫЛОЧКА⭐️⭐️⭐️</b>"
+)
+
+# Ссылка на вебинар (нужно добавить свою)
+WEBINAR_URL = "https://example.com/webinar"  # ЗАМЕНИТЕ НА РЕАЛЬНУЮ ССЫЛКУ
+
 # Первый кейс (Алиса)
 CASE1_TEXT = (
     "<b>«Обучение стало лучшим вложением в 2026 году, потому что спустя 3 месяца я вышла на доход 130к в месяц»</b> 🪩\n\n"
@@ -146,12 +168,12 @@ CASE1_IMAGE_PATH = "images/pic1.jpg"
 CASE2_IMAGE_PATH = "images/pic2.jpg"
 
 # Настройки задержек (в секундах)
-DELAY_AFTER_VIDEO_NOTE = 17      # 17 секунд до урока
-DELAY_AFTER_LESSON = 1800        # 5 минут до подарка
-DELAY_AFTER_GIFT = 86400         # 24 часа до промо-поста
-DELAY_AFTER_PROMO = 1800         # 30 минут после промо-поста до первого кейса
-DELAY_BETWEEN_CASES = 1800       # 30 минут между кейсами
-DELAY_AFTER_CASE2 = 3600         # 1 час после второго кейса до поста Vision Club
+DELAY_AFTER_VIDEO_NOTE = 17  # 17 секунд до урока
+DELAY_AFTER_LESSON = 1800  # 5 минут до подарка
+DELAY_AFTER_GIFT = 86400  # 24 часа до промо-поста
+DELAY_AFTER_PROMO = 1800  # 30 минут после промо-поста до первого кейса
+DELAY_BETWEEN_CASES = 1800  # 30 минут между кейсами
+DELAY_AFTER_CASE2 = 3600  # 1 час после второго кейса до поста Vision Club
 
 user_tasks = {}
 
@@ -273,8 +295,8 @@ async def set_commands(application: Application) -> None:
         BotCommand("help", "Помощь"),
         BotCommand("myid", "Узнать свой ID"),
         BotCommand("stat", "Статистика (только админы)"),
-        BotCommand("testvision", "🧪 Тест поста Vision Summer Club"),
-        BotCommand("sendvision", "📨 Отправить Vision Summer Club всем"),
+        BotCommand("testwebinar", "🧪 Тест поста Вебинар"),
+        BotCommand("sendwebinar", "📨 Отправить пост Вебинар всем"),
     ]
     await application.bot.set_my_commands(commands)
     print("✅ Команды бота установлены")
@@ -541,28 +563,32 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "/help - Показать эту справку\n"
         "/myid - Узнать свой ID\n"
         "/stat - Статистика пользователей (только админы)\n"
-        "/testvision - Тест поста Vision Summer Club\n"
-        "/sendvision - Отправить Vision Summer Club всем пользователям"
+        "/testwebinar - Тест поста Вебинар\n"
+        "/sendwebinar - Отправить пост Вебинар всем пользователям"
     )
     await update.message.reply_text(help_text, parse_mode="Markdown")
 
 
-# --- ТЕСТОВАЯ КОМАНДА ДЛЯ ПРОВЕРКИ ПОСТА VISION CLUB ---
-async def test_vision(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет тестовый пост Vision Summer Club только админу"""
+# --- ТЕСТОВАЯ КОМАНДА ДЛЯ ПРОВЕРКИ ПОСТА ВЕБИНАР ---
+async def test_webinar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет тестовый пост Вебинар только админу"""
     user_id = update.effective_user.id
 
     if not is_admin(user_id):
         await update.message.reply_text("⛔ Доступ запрещён!")
         return
 
-    await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю пост Vision Summer Club только вам...")
+    await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю пост Вебинар только вам...")
 
     try:
+        keyboard = [[InlineKeyboardButton("⭐️ ПЕРЕЙТИ НА ВЕБИНАР ⭐️", url=WEBINAR_URL)]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
         await update.message.reply_text(
-            text=VISION_CLUB_TEXT,
+            text=WEBINAR_TEXT,
             parse_mode="HTML",
-            disable_web_page_preview=False
+            disable_web_page_preview=False,
+            reply_markup=reply_markup
         )
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка: {e}")
@@ -570,9 +596,9 @@ async def test_vision(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     await update.message.reply_text("✅ Готово!")
 
 
-# --- КОМАНДА ДЛЯ РАССЫЛКИ VISION CLUB ВСЕМ ПОЛЬЗОВАТЕЛЯМ ---
-async def send_vision_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет пост Vision Summer Club всем существующим пользователям (только админы)"""
+# --- КОМАНДА ДЛЯ РАССЫЛКИ ВЕБИНАРА ВСЕМ ПОЛЬЗОВАТЕЛЯМ ---
+async def send_webinar_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет пост Вебинар всем существующим пользователям (только админы)"""
     user_id = update.effective_user.id
 
     if not is_admin(user_id):
@@ -586,10 +612,13 @@ async def send_vision_to_existing_users(update: Update, context: ContextTypes.DE
         await update.message.reply_text("📭 Нет пользователей для рассылки")
         return
 
-    await update.message.reply_text(f"📢 Начинаю рассылку Vision Summer Club {len(users)} пользователям...")
+    await update.message.reply_text(f"📢 Начинаю рассылку поста Вебинар {len(users)} пользователям...")
 
     success_count = 0
     fail_count = 0
+
+    keyboard = [[InlineKeyboardButton("⭐️ ПЕРЕЙТИ НА ВЕБИНАР ⭐️", url=WEBINAR_URL)]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
     for user_id_str, user_data in users.items():
         uid = int(user_id_str)
@@ -600,65 +629,4 @@ async def send_vision_to_existing_users(update: Update, context: ContextTypes.DE
         try:
             await context.bot.send_message(
                 chat_id=uid,
-                text=VISION_CLUB_TEXT,
-                parse_mode="HTML",
-                disable_web_page_preview=False
-            )
-
-            success_count += 1
-            print(f"✅ Vision Club отправлен пользователю {user_data.get('first_name', uid)}")
-            await asyncio.sleep(0.3)
-
-        except Exception as e:
-            fail_count += 1
-            print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
-
-    await update.message.reply_text(
-        f"✅ Рассылка Vision Summer Club завершена!\n\n"
-        f"📤 Успешно: {success_count}\n"
-        f"❌ Ошибок: {fail_count}"
-    )
-
-
-# --- Обработчик для любых сообщений ---
-async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отвечает на любые текстовые сообщения, кроме команд"""
-    await update.message.reply_text(
-        "Пожалуйста, используй кнопки меню или команду /start"
-    )
-
-
-def main() -> None:
-    """Запуск бота"""
-    if not TOKEN:
-        raise ValueError("BOT_TOKEN не найден. Создай файл .env и добавь BOT_TOKEN=твой_токен")
-
-    # Увеличиваем таймауты для избежания ConnectTimeout
-    request = HTTPXRequest(
-        connect_timeout=30.0,
-        read_timeout=30.0,
-        write_timeout=30.0,
-        pool_timeout=30.0
-    )
-
-    application = Application.builder().token(TOKEN).request(request).build()
-    application.post_init = set_commands
-
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("menu", menu))
-    application.add_handler(CommandHandler("help", help_command))
-    application.add_handler(CommandHandler("myid", myid_command))
-    application.add_handler(CommandHandler("stat", stat_command))
-    application.add_handler(CommandHandler("testvision", test_vision))
-    application.add_handler(CommandHandler("sendvision", send_vision_to_existing_users))
-
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
-
-    print("🚀 Бот запущен и готов к работе!")
-    print("⏱️ Тайминги: кружок → 17 сек → урок → 5 мин → подарок → 24 часа → промо-пост → 30 мин → кейс Алисы → 30 мин → кейс Лизы → 1 час → Vision Summer Club")
-    print(f"👑 Админы ID: {ADMIN_IDS}")
-    application.run_polling(allowed_updates=Update.ALL_TYPES)
-
-
-if __name__ == "__main__":
-    main()
+                text=WEBIN
