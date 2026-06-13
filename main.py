@@ -629,4 +629,67 @@ async def send_webinar_to_existing_users(update: Update, context: ContextTypes.D
         try:
             await context.bot.send_message(
                 chat_id=uid,
-                text=WEBIN
+                text=WEBINAR_TEXT,
+                parse_mode="HTML",
+                disable_web_page_preview=False,
+                reply_markup=reply_markup
+            )
+
+            success_count += 1
+            print(f"✅ Вебинар отправлен пользователю {user_data.get('first_name', uid)}")
+            await asyncio.sleep(0.3)
+
+        except Exception as e:
+            fail_count += 1
+            print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
+
+    await update.message.reply_text(
+        f"✅ Рассылка поста Вебинар завершена!\n\n"
+        f"📤 Успешно: {success_count}\n"
+        f"❌ Ошибок: {fail_count}"
+    )
+
+
+# --- Обработчик для любых сообщений ---
+async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отвечает на любые текстовые сообщения, кроме команд"""
+    await update.message.reply_text(
+        "Пожалуйста, используй кнопки меню или команду /start"
+    )
+
+
+def main() -> None:
+    """Запуск бота"""
+    if not TOKEN:
+        raise ValueError("BOT_TOKEN не найден. Создай файл .env и добавь BOT_TOKEN=твой_токен")
+
+    # Увеличиваем таймауты для избежания ConnectTimeout
+    request = HTTPXRequest(
+        connect_timeout=30.0,
+        read_timeout=30.0,
+        write_timeout=30.0,
+        pool_timeout=30.0
+    )
+
+    application = Application.builder().token(TOKEN).request(request).build()
+    application.post_init = set_commands
+
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("menu", menu))
+    application.add_handler(CommandHandler("help", help_command))
+    application.add_handler(CommandHandler("myid", myid_command))
+    application.add_handler(CommandHandler("stat", stat_command))
+    application.add_handler(CommandHandler("testwebinar", test_webinar))
+    application.add_handler(CommandHandler("sendwebinar", send_webinar_to_existing_users))
+
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
+
+    print("🚀 Бот запущен и готов к работе!")
+    print(
+        "⏱️ Тайминги: кружок → 17 сек → урок → 5 мин → подарок → 24 часа → промо-пост → 30 мин → кейс Алисы → 30 мин → кейс Лизы → 1 час → Vision Summer Club")
+    print(f"👑 Админы ID: {ADMIN_IDS}")
+    application.run_polling(allowed_updates=Update.ALL_TYPES)
+
+
+if __name__ == "__main__":
+    main()
