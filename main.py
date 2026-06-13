@@ -94,69 +94,32 @@ WEBINAR_TEXT = (
     "<b>ВЕБИНАР ЭТИМ ЛЕТНИМ ДНЁМ 🛼</b>\n\n"
     "Вас ждёт эфир на тему: <b>«Как стать востребованным монтажёром уже этим летом»</b>🍦\n\n"
     "<b>Что разберём на вебинаре:</b>\n\n"
-    "// кто такой монтажёр?\n"
+    "<i>// кто такой монтажёр?</i>\n"
     "разберём, какие задачи решает монтажёр, куда можно расти и на что делать упор\n\n"
-    "// виды монтажа: поговорим про горизонтальный и вертикальный монтаж\n\n"
-    "// расскажу, как рассчитать свою заработную плату и выйти на 100-150к в месяц\n\n"
-    "// как создавать портфолио: откуда брать работы, если нет ещё клиентов? как оформить портфолио, чтобы оно продавало\n\n"
-    "// где брать вдохновение и креатив? Обсудим, что такое креатив монтажа и как вдохновляться не только на Pinterest\n\n"
-    "// открытие продаж на моё обучение «Vision Мастерская»\n\n"
+    "<i>// виды монтажа: поговорим про горизонтальный и вертикальный монтаж</i>\n\n"
+    "<i>// расскажу, как рассчитать свою заработную плату и выйти на 100-150к в месяц</i>\n\n"
+    "<i>// как создавать портфолио: откуда брать работы, если нет ещё клиентов? как оформить портфолио, чтобы оно продавало</i>\n\n"
+    "<i>// где брать вдохновение и креатив? Обсудим, что такое креатив монтажа и как вдохновляться не только на Pinterest</i>\n\n"
+    "<i>// открытие продаж на моё обучение «Vision Мастерская»</i>\n\n"
     "<b>РАЗБОР ВАШИХ РАБОТ ОТ МЕНЯ🪩</b>\n\n"
     "я выберу несколько ваших работ из анкеты и разберу в прямом эфире, где поделюсь своим мнением🍦\n\n"
     "<b>Встречаемся уже в СЕГОДНЯ в 18:00 по МСК</b>\n\n"
-    "<i>Переходи по ссылке, чтобы участвовать на вебинаре и не забудь заполнить анкету на разбор, если хочешь получить комментарии от меня</i>\n\n"
+    "Переходи по ссылке, чтобы участвовать на вебинаре и не забудь заполнить анкету на разбор, если хочешь получить комментарии от меня\n\n"
+    "<b>⭐️⭐️⭐️ССЫЛОЧКА⭐️⭐️⭐️</b>"
 )
 
-# Ссылка на вебинар (нужно добавить свою)
-WEBINAR_URL = "https://t.me/+l2NfnQhCgrA2NDhi"  # ЗАМЕНИТЕ НА РЕАЛЬНУЮ ССЫЛКУ
-
-# Первый кейс (Алиса)
-CASE1_TEXT = (
-    "<b>«Обучение стало лучшим вложением в 2026 году, потому что спустя 3 месяца я вышла на доход 130к в месяц»</b> 🪩\n\n"
-    "<b>Давайте расскажу про Алису (@alisakokovina)</b>\n\n"
-    "<b>До обучения:</b>\n"
-    "> работала монтажёром, но делала интуитивно\n"
-    "> доход 50–70к в месяц\n"
-    "> не всегда понимала как создавать анимационные эффекты\n"
-    "> не делала горизонтальный формат\n"
-    "> творческий кризис\n\n"
-    "<b>Зарабатывать на монтаже - не сложно, если понимать, как формируется твой заработок🙂‍↕️</b>\n\n"
-    "<b>Из чего строился доход у Алисы:</b>\n"
-    "> пакет 28к (8 роликов по 3500)\n"
-    "> пакет 35к (7 роликов по 5000)\n"
-    "> UGC-клиент ~30-35к\n"
-    "> 3 ютуб ролика ~21к\n"
-    "> посты для клиентов ~15к\n\n"
-    "= ~130к\n\n"
-    "<b>Правда: 2-3 постоянных клиента и это уже стабильные 50-80к в месяц, не надо каждый раз искать новых 🙌</b>\n\n"
-    "<b>Во время обучения:</b>\n"
-    "> научилась цветокоррекции в Davinci\n"
-    "> начала анализировать фильмы, клипы\n"
-    "> появился свой стиль\n"
-    "> начала мыслить целостной историей вместо отдельных эффектов\n"
-    "> вышла на доход 130к\n\n"
-    "И вы сможете, если будете работать над навыками, не ждать и тогда всё получится🤍"
+# Пост Гранты
+GRANTS_TEXT = (
+    "<b>И САМОЕ ВКУСНОЕ - ГРАНТЫ НА ОБУЧЕНИЕ</b>\n\n"
+    "3 места - вы сможете получить место в «Vision Мастерской» со скидкой 30%\n\n"
+    "Чтобы участвовать в разборе и в грантах - заполняйте анкету\n\n"
+    "*работу можно прикрепить, которую вы сделали на интенсиве или уже смонтированный ролик для себя / клиента\n\n"
+    "*условие участия в грантах - присутствие на вебинаре\n\n"
+    "<b>🫥ССЫЛОЧКА НА РЕГИСТРАЦИЮ🫥</b>"
 )
 
-# Второй кейс (Лиза)
-CASE2_TEXT = (
-    "<b>смонтировать рилс – это одно, а перестать бояться, что ты плохой монтажёр – совсем другое</b>🙂‍↕️\n\n"
-    "ко мне на обучение пришла ученица Лиза (@elzavettta)\n\n"
-    "<b>До обучения:</b>\n"
-    "> // работала в сфере smm за небольшие деньги, чувствовала себя обесцененной\n"
-    "> // ушла в монтаж, монтировала год для клиентов, но понимала, что недостаточно навыков\n"
-    "> // не могла сказать себе и другим: «Я монтажёр, я могу сделать вам классные ролики», от этого выгорание, низкие чеки\n\n"
-    "<b>После обучения:</b>\n"
-    "> // перестала думать, что она плохой монтажёр\n"
-    "> // появились 2 стабильных клиента\n"
-    "> // вырос средний чек с 1,3 т.р до 5 т.р\n"
-    "> // «я когда думаю о том, за сколько я делала ролики, которые как оказалось, можно делать за 5т.р, мне становится плохо»\n\n"
-    "на обучении мы прорабатываем не только технику и креатив⭐️\n\n"
-    "но и то, что внутри, чтобы человек перестал бояться проявляться, называть цену, говорить «я монтажёр»\n\n"
-    "потому что без этого даже самые крутые навыки не приведут к деньгам и свободе🪩"
-)
-
-# Ссылки
+# Ссылка на вебинар и анкету
+WEBINAR_URL = "https://example.com/webinar"  # ЗАМЕНИТЕ НА РЕАЛЬНУЮ ССЫЛКУ
 SURVEY_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeV3hbxukt2k-_9JVf0OyPPJf68ySNcsoB-kZF6NjdeBRDOgQ/viewform?usp=publish-editor"
 VIDEO_URL = "https://www.youtube.com/watch?v=7q0tfS3NcJc&feature=youtu.be"
 
@@ -287,17 +250,32 @@ async def stat_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 
 async def set_commands(application: Application) -> None:
-    """Устанавливает команды в меню бота"""
+    """Устанавливает команды в меню бота (только для админов видны админские команды)"""
+    # Обычные команды для всех
     commands = [
         BotCommand("start", "Начать заново"),
         BotCommand("menu", "Показать главное меню"),
         BotCommand("help", "Помощь"),
         BotCommand("myid", "Узнать свой ID"),
+    ]
+    await application.bot.set_my_commands(commands)
+
+    # Админские команды устанавливаются отдельно для админов
+    admin_commands = [
         BotCommand("stat", "Статистика (только админы)"),
         BotCommand("testwebinar", "🧪 Тест поста Вебинар"),
         BotCommand("sendwebinar", "📨 Отправить пост Вебинар всем"),
+        BotCommand("testgrants", "🧪 Тест поста Гранты"),
+        BotCommand("sendgrants", "📨 Отправить пост Гранты всем"),
     ]
-    await application.bot.set_my_commands(commands)
+
+    for admin_id in ADMIN_IDS:
+        try:
+            await application.bot.set_my_commands(commands, scope=telegram.BotCommandScopeChat(admin_id))
+            await application.bot.set_my_commands(admin_commands, scope=telegram.BotCommandScopeChat(admin_id))
+        except Exception as e:
+            print(f"⚠️ Не удалось установить команды для админа {admin_id}: {e}")
+
     print("✅ Команды бота установлены")
 
 
@@ -560,15 +538,14 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "/start - Начать заново (сразу отправит кружок)\n"
         "/menu - Показать главное меню\n"
         "/help - Показать эту справку\n"
-        "/myid - Узнать свой ID\n"
-        "/stat - Статистика пользователей (только админы)\n"
-        "/testwebinar - Тест поста Вебинар\n"
-        "/sendwebinar - Отправить пост Вебинар всем пользователям"
+        "/myid - Узнать свой ID\n\n"
+        "👑 *Администраторам:*\n"
+        "Команды /stat, /testwebinar, /sendwebinar, /testgrants, /sendgrants доступны только администраторам"
     )
     await update.message.reply_text(help_text, parse_mode="Markdown")
 
 
-# --- ТЕСТОВАЯ КОМАНДА ДЛЯ ПРОВЕРКИ ПОСТА ВЕБИНАР ---
+# --- ТЕСТОВЫЕ КОМАНДЫ ДЛЯ ПРОВЕРКИ (только для админов) ---
 async def test_webinar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Отправляет тестовый пост Вебинар только админу"""
     user_id = update.effective_user.id
@@ -595,7 +572,33 @@ async def test_webinar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await update.message.reply_text("✅ Готово!")
 
 
-# --- КОМАНДА ДЛЯ РАССЫЛКИ ВЕБИНАРА ВСЕМ ПОЛЬЗОВАТЕЛЯМ ---
+async def test_grants(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет тестовый пост Гранты только админу"""
+    user_id = update.effective_user.id
+
+    if not is_admin(user_id):
+        await update.message.reply_text("⛔ Доступ запрещён!")
+        return
+
+    await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю пост Гранты только вам...")
+
+    try:
+        keyboard = [[InlineKeyboardButton("🫥 ЗАПОЛНИТЬ АНКЕТУ 🫥", url=SURVEY_URL)]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        await update.message.reply_text(
+            text=GRANTS_TEXT,
+            parse_mode="HTML",
+            disable_web_page_preview=False,
+            reply_markup=reply_markup
+        )
+    except Exception as e:
+        await update.message.reply_text(f"❌ Ошибка: {e}")
+
+    await update.message.reply_text("✅ Готово!")
+
+
+# --- КОМАНДЫ ДЛЯ РАССЫЛКИ (только для админов) ---
 async def send_webinar_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Отправляет пост Вебинар всем существующим пользователям (только админы)"""
     user_id = update.effective_user.id
@@ -649,6 +652,59 @@ async def send_webinar_to_existing_users(update: Update, context: ContextTypes.D
     )
 
 
+async def send_grants_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет пост Гранты всем существующим пользователям (только админы)"""
+    user_id = update.effective_user.id
+
+    if not is_admin(user_id):
+        await update.message.reply_text("⛔ *Доступ запрещён!*\nЭта команда только для администраторов.",
+                                        parse_mode="Markdown")
+        return
+
+    users = load_users()
+
+    if not users:
+        await update.message.reply_text("📭 Нет пользователей для рассылки")
+        return
+
+    await update.message.reply_text(f"📢 Начинаю рассылку поста Гранты {len(users)} пользователям...")
+
+    success_count = 0
+    fail_count = 0
+
+    keyboard = [[InlineKeyboardButton("🫥 ЗАПОЛНИТЬ АНКЕТУ 🫥", url=SURVEY_URL)]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    for user_id_str, user_data in users.items():
+        uid = int(user_id_str)
+
+        if is_admin(uid):
+            continue
+
+        try:
+            await context.bot.send_message(
+                chat_id=uid,
+                text=GRANTS_TEXT,
+                parse_mode="HTML",
+                disable_web_page_preview=False,
+                reply_markup=reply_markup
+            )
+
+            success_count += 1
+            print(f"✅ Гранты отправлены пользователю {user_data.get('first_name', uid)}")
+            await asyncio.sleep(0.3)
+
+        except Exception as e:
+            fail_count += 1
+            print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
+
+    await update.message.reply_text(
+        f"✅ Рассылка поста Гранты завершена!\n\n"
+        f"📤 Успешно: {success_count}\n"
+        f"❌ Ошибок: {fail_count}"
+    )
+
+
 # --- Обработчик для любых сообщений ---
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Отвечает на любые текстовые сообщения, кроме команд"""
@@ -680,6 +736,8 @@ def main() -> None:
     application.add_handler(CommandHandler("stat", stat_command))
     application.add_handler(CommandHandler("testwebinar", test_webinar))
     application.add_handler(CommandHandler("sendwebinar", send_webinar_to_existing_users))
+    application.add_handler(CommandHandler("testgrants", test_grants))
+    application.add_handler(CommandHandler("sendgrants", send_grants_to_existing_users))
 
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
