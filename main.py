@@ -723,12 +723,12 @@ def main() -> None:
     if not TOKEN:
         raise ValueError("BOT_TOKEN не найден. Создай файл .env и добавь BOT_TOKEN=твой_токен")
 
-    # Увеличиваем таймауты для избежания ConnectTimeout
+    # Увеличиваем таймауты
     request = HTTPXRequest(
-        connect_timeout=30.0,
-        read_timeout=30.0,
-        write_timeout=30.0,
-        pool_timeout=30.0
+        connect_timeout=60.0,  # было 30
+        read_timeout=60.0,  # было 30
+        write_timeout=60.0,  # было 30
+        pool_timeout=60.0  # было 30
     )
 
     application = Application.builder().token(TOKEN).request(request).build()
