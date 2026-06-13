@@ -115,7 +115,6 @@ GRANTS_TEXT = (
     "Чтобы участвовать в разборе и в грантах - заполняйте анкету\n\n"
     "*работу можно прикрепить, которую вы сделали на интенсиве или уже смонтированный ролик для себя / клиента\n\n"
     "*условие участия в грантах - присутствие на вебинаре\n\n"
-    "<b>🫥ССЫЛОЧКА НА РЕГИСТРАЦИЮ🫥</b>"
 )
 
 # Ссылка на вебинар и анкету
@@ -583,7 +582,7 @@ async def test_grants(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю пост Гранты только вам...")
 
     try:
-        keyboard = [[InlineKeyboardButton("🫥 ЗАПОЛНИТЬ АНКЕТУ 🫥", url=SURVEY_URL)]]
+        keyboard = [[InlineKeyboardButton("ЗАПОЛНИТЬ АНКЕТУ", url=SURVEY_URL)]]
         reply_markup = InlineKeyboardMarkup(keyboard)
 
         await update.message.reply_text(
