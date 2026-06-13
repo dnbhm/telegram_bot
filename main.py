@@ -700,6 +700,8 @@ def main() -> None:
     application.add_handler(CommandHandler("testzoom", test_zoom))
     application.add_handler(CommandHandler("sendzoom", send_zoom_to_existing_users))
 
+
+
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
     print("🚀 Бот запущен и готов к работе!")
