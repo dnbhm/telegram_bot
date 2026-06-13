@@ -89,8 +89,8 @@ VISION_CLUB_TEXT = (
     "<b><a href='https://t.me/+8cSWBiyep6FiN2Ri'>Vision Summer Club</a></b>"
 )
 
-# Пост Вебинар
-WEBINAR_TEXT = (
+# Пост Zoom (вебинар)
+ZOOM_POST_TEXT = (
     "<b>ВЕБИНАР ЭТИМ ЛЕТНИМ ДНЁМ 🛼</b>\n\n"
     "Вас ждёт эфир на тему: <b>«Как стать востребованным монтажёром уже этим летом»</b>🍦\n\n"
     "<b>Что разберём на вебинаре:</b>\n\n"
@@ -107,25 +107,63 @@ WEBINAR_TEXT = (
     "Переходи по ссылке, чтобы участвовать на вебинаре и не забудь заполнить анкету на разбор, если хочешь получить комментарии от меня\n\n"
 )
 
-# Пост Гранты
-GRANTS_TEXT = (
-    "<b>И САМОЕ ВКУСНОЕ - ГРАНТЫ НА ОБУЧЕНИЕ</b>\n\n"
-    "3 места - вы сможете получить место в «Vision Мастерской» со скидкой 30%\n\n"
-    "<b>Чтобы участвовать в разборе и в грантах - заполняйте анкету</b>\n\n"
-    "<i>*работу можно прикрепить, которую вы сделали на интенсиве или уже смонтированный ролик для себя / клиента</i>\n\n"
-    "<i>*условие участия в грантах - присутствие на вебинаре</i>\n\n"
+# Первый кейс (Алиса)
+CASE1_TEXT = (
+    "<b>«Обучение стало лучшим вложением в 2026 году, потому что спустя 3 месяца я вышла на доход 130к в месяц»</b> 🪩\n\n"
+    "<b>Давайте расскажу про Алису (@alisakokovina)</b>\n\n"
+    "<b>До обучения:</b>\n"
+    "> работала монтажёром, но делала интуитивно\n"
+    "> доход 50–70к в месяц\n"
+    "> не всегда понимала как создавать анимационные эффекты\n"
+    "> не делала горизонтальный формат\n"
+    "> творческий кризис\n\n"
+    "<b>Зарабатывать на монтаже - не сложно, если понимать, как формируется твой заработок🙂‍↕️</b>\n\n"
+    "<b>Из чего строился доход у Алисы:</b>\n"
+    "> пакет 28к (8 роликов по 3500)\n"
+    "> пакет 35к (7 роликов по 5000)\n"
+    "> UGC-клиент ~30-35к\n"
+    "> 3 ютуб ролика ~21к\n"
+    "> посты для клиентов ~15к\n\n"
+    "= ~130к\n\n"
+    "<b>Правда: 2-3 постоянных клиента и это уже стабильные 50-80к в месяц, не надо каждый раз искать новых 🙌</b>\n\n"
+    "<b>Во время обучения:</b>\n"
+    "> научилась цветокоррекции в Davinci\n"
+    "> начала анализировать фильмы, клипы\n"
+    "> появился свой стиль\n"
+    "> начала мыслить целостной историей вместо отдельных эффектов\n"
+    "> вышла на доход 130к\n\n"
+    "И вы сможете, если будете работать над навыками, не ждать и тогда всё получится🤍"
 )
 
-# Ссылка на вебинар и анкету
-WEBINAR_URL = "https://t.me/+l2NfnQhCgrA2NDhi"
+# Второй кейс (Лиза)
+CASE2_TEXT = (
+    "<b>смонтировать рилс – это одно, а перестать бояться, что ты плохой монтажёр – совсем другое</b>🙂‍↕️\n\n"
+    "ко мне на обучение пришла ученица Лиза (@elzavettta)\n\n"
+    "<b>До обучения:</b>\n"
+    "> // работала в сфере smm за небольшие деньги, чувствовала себя обесцененной\n"
+    "> // ушла в монтаж, монтировала год для клиентов, но понимала, что недостаточно навыков\n"
+    "> // не могла сказать себе и другим: «Я монтажёр, я могу сделать вам классные ролики», от этого выгорание, низкие чеки\n\n"
+    "<b>После обучения:</b>\n"
+    "> // перестала думать, что она плохой монтажёр\n"
+    "> // появились 2 стабильных клиента\n"
+    "> // вырос средний чек с 1,3 т.р до 5 т.р\n"
+    "> // «я когда думаю о том, за сколько я делала ролики, которые как оказалось, можно делать за 5т.р, мне становится плохо»\n\n"
+    "на обучении мы прорабатываем не только технику и креатив⭐️\n\n"
+    "но и то, что внутри, чтобы человек перестал бояться проявляться, называть цену, говорить «я монтажёр»\n\n"
+    "потому что без этого даже самые крутые навыки не приведут к деньгам и свободе🪩"
+)
+
+# Ссылки
 SURVEY_URL = "https://docs.google.com/forms/d/e/1FAIpQLSe97sBgl1xuY6THBZjw4tENB5rDZSN8IQ46fpGC7mTer_cD8g/viewform?usp=header"
 VIDEO_URL = "https://www.youtube.com/watch?v=7q0tfS3NcJc&feature=youtu.be"
+ZOOM_URL = "https://us06web.zoom.us/j/1234567890"  # ЗАМЕНИТЕ НА РЕАЛЬНУЮ ССЫЛКУ
 
 # Пути к файлам
 VIDEO_NOTE_PATH = "video_notes/welcome.mp4"
 LESSON_IMAGE_PATH = "images/lesson_preview.jpg"
 CASE1_IMAGE_PATH = "images/pic1.jpg"
 CASE2_IMAGE_PATH = "images/pic2.jpg"
+ZOOM_IMAGE_PATH = "images/1306_1.jpg"
 
 # Настройки задержек (в секундах)
 DELAY_AFTER_VIDEO_NOTE = 17  # 17 секунд до урока
@@ -251,35 +289,18 @@ async def set_commands(application: Application) -> None:
     """Устанавливает команды в меню бота (админы видят все команды, обычные пользователи - только базовые)"""
 
     # Базовые команды для всех пользователей
-    default_commands = [
+    commands = [
         BotCommand("start", "Начать заново"),
         BotCommand("menu", "Показать главное меню"),
         BotCommand("help", "Помощь"),
         BotCommand("myid", "Узнать свой ID"),
+        BotCommand("stat", "📊 Статистика пользователей (только админы)"),
+        BotCommand("testzoom", "🧪 Тест поста Zoom"),
+        BotCommand("sendzoom", "📨 Отправить пост Zoom всем"),
     ]
 
-    # Дополнительные команды только для админов
-    admin_commands = [
-        BotCommand("stat", "📊 Статистика пользователей"),
-        BotCommand("testwebinar", "🧪 Тест поста Вебинар"),
-        BotCommand("sendwebinar", "📨 Отправить пост Вебинар всем"),
-        BotCommand("testgrants", "🧪 Тест поста Гранты"),
-        BotCommand("sendgrants", "📨 Отправить пост Гранты всем"),
-    ]
-
-    # Устанавливаем базовые команды для всех
-    await application.bot.set_my_commands(default_commands)
-
-    # Устанавливаем расширенные команды для каждого админа
-    for admin_id in ADMIN_IDS:
-        try:
-            await application.bot.set_my_commands(
-                default_commands + admin_commands,
-                scope=BotCommandScopeChat(chat_id=admin_id)
-            )
-            print(f"✅ Установлены админ-команды для {admin_id}")
-        except Exception as e:
-            print(f"⚠️ Не удалось установить команды для админа {admin_id}: {e}")
+    # Устанавливаем команды для всех
+    await application.bot.set_my_commands(commands)
 
     print("✅ Команды бота установлены")
 
@@ -543,32 +564,44 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "/start - Начать заново (сразу отправит кружок)\n"
         "/menu - Показать главное меню\n"
         "/help - Показать эту справку\n"
-        "/myid - Узнать свой ID\n\n"
-        "👑 *Администраторам:*\n"
-        "Команды /stat, /testwebinar, /sendwebinar, /testgrants, /sendgrants доступны только администраторам"
+        "/myid - Узнать свой ID\n"
+        "/stat - Статистика пользователей (только админы)\n"
+        "/testzoom - Тест поста Zoom (только админы)\n"
+        "/sendzoom - Отправить пост Zoom всем (только админы)\n\n"
+        "Просто нажимай на кнопки для навигации!"
     )
     await update.message.reply_text(help_text, parse_mode="Markdown")
 
 
-# --- ТЕСТОВЫЕ КОМАНДЫ ДЛЯ ПРОВЕРКИ (только для админов) ---
-async def test_webinar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет тестовый пост Вебинар только админу"""
+# --- ТЕСТОВАЯ КОМАНДА ДЛЯ ПРОВЕРКИ ПОСТА ZOOM (только для админов) ---
+async def test_zoom(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет тестовый пост Zoom только админу"""
     user_id = update.effective_user.id
 
     if not is_admin(user_id):
         await update.message.reply_text("⛔ Доступ запрещён!")
         return
 
-    await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю пост Вебинар только вам...")
+    await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю пост Zoom только вам...")
 
     try:
-        keyboard = [[InlineKeyboardButton("⭐️ ПЕРЕЙТИ НА ВЕБИНАР ⭐️", url=WEBINAR_URL)]]
+        keyboard = [[InlineKeyboardButton("🔗 ПЕРЕЙТИ НА ВЕБИНАР 🔗", url=ZOOM_URL)]]
         reply_markup = InlineKeyboardMarkup(keyboard)
 
+        with open(ZOOM_IMAGE_PATH, 'rb') as photo:
+            await update.message.reply_photo(
+                photo=photo,
+                caption=ZOOM_POST_TEXT,
+                parse_mode="HTML",
+                reply_markup=reply_markup
+            )
+    except FileNotFoundError:
+        await update.message.reply_text("❌ Фото 1306_1.jpg не найдено")
+        keyboard = [[InlineKeyboardButton("🔗 ПЕРЕЙТИ НА ВЕБИНАР 🔗", url=ZOOM_URL)]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
         await update.message.reply_text(
-            text=WEBINAR_TEXT,
+            text=ZOOM_POST_TEXT,
             parse_mode="HTML",
-            disable_web_page_preview=False,
             reply_markup=reply_markup
         )
     except Exception as e:
@@ -577,35 +610,9 @@ async def test_webinar(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await update.message.reply_text("✅ Готово!")
 
 
-async def test_grants(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет тестовый пост Гранты только админу"""
-    user_id = update.effective_user.id
-
-    if not is_admin(user_id):
-        await update.message.reply_text("⛔ Доступ запрещён!")
-        return
-
-    await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю пост Гранты только вам...")
-
-    try:
-        keyboard = [[InlineKeyboardButton("ЗАПОЛНИТЬ АНКЕТУ", url=SURVEY_URL)]]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-
-        await update.message.reply_text(
-            text=GRANTS_TEXT,
-            parse_mode="HTML",
-            disable_web_page_preview=False,
-            reply_markup=reply_markup
-        )
-    except Exception as e:
-        await update.message.reply_text(f"❌ Ошибка: {e}")
-
-    await update.message.reply_text("✅ Готово!")
-
-
-# --- КОМАНДЫ ДЛЯ РАССЫЛКИ (только для админов) ---
-async def send_webinar_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет пост Вебинар всем существующим пользователям (только админы)"""
+# --- КОМАНДА ДЛЯ РАССЫЛКИ ПОСТА ZOOM ВСЕМ ПОЛЬЗОВАТЕЛЯМ (только для админов) ---
+async def send_zoom_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет пост Zoom всем существующим пользователям (только админы)"""
     user_id = update.effective_user.id
 
     if not is_admin(user_id):
@@ -619,12 +626,12 @@ async def send_webinar_to_existing_users(update: Update, context: ContextTypes.D
         await update.message.reply_text("📭 Нет пользователей для рассылки")
         return
 
-    await update.message.reply_text(f"📢 Начинаю рассылку поста Вебинар {len(users)} пользователям...")
+    await update.message.reply_text(f"📢 Начинаю рассылку поста Zoom {len(users)} пользователям...")
 
     success_count = 0
     fail_count = 0
 
-    keyboard = [[InlineKeyboardButton("⭐️ ПЕРЕЙТИ НА ВЕБИНАР ⭐️", url=WEBINAR_URL)]]
+    keyboard = [[InlineKeyboardButton("🔗 ПЕРЕЙТИ НА ВЕБИНАР 🔗", url=ZOOM_URL)]]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     for user_id_str, user_data in users.items():
@@ -634,16 +641,32 @@ async def send_webinar_to_existing_users(update: Update, context: ContextTypes.D
             continue
 
         try:
-            await context.bot.send_message(
-                chat_id=uid,
-                text=WEBINAR_TEXT,
-                parse_mode="HTML",
-                disable_web_page_preview=False,
-                reply_markup=reply_markup
-            )
+            with open(ZOOM_IMAGE_PATH, 'rb') as photo:
+                await context.bot.send_photo(
+                    chat_id=uid,
+                    photo=photo,
+                    caption=ZOOM_POST_TEXT,
+                    parse_mode="HTML",
+                    reply_markup=reply_markup
+                )
 
             success_count += 1
-            print(f"✅ Вебинар отправлен пользователю {user_data.get('first_name', uid)}")
+            print(f"✅ Zoom пост отправлен пользователю {user_data.get('first_name', uid)}")
+            await asyncio.sleep(0.3)
+
+        except FileNotFoundError:
+            try:
+                await context.bot.send_message(
+                    chat_id=uid,
+                    text=ZOOM_POST_TEXT,
+                    parse_mode="HTML",
+                    reply_markup=reply_markup
+                )
+                success_count += 1
+                print(f"✅ Zoom пост (без фото) отправлен пользователю {user_data.get('first_name', uid)}")
+            except Exception as e:
+                fail_count += 1
+                print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
             await asyncio.sleep(0.3)
 
         except Exception as e:
@@ -651,60 +674,7 @@ async def send_webinar_to_existing_users(update: Update, context: ContextTypes.D
             print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
 
     await update.message.reply_text(
-        f"✅ Рассылка поста Вебинар завершена!\n\n"
-        f"📤 Успешно: {success_count}\n"
-        f"❌ Ошибок: {fail_count}"
-    )
-
-
-async def send_grants_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет пост Гранты всем существующим пользователям (только админы)"""
-    user_id = update.effective_user.id
-
-    if not is_admin(user_id):
-        await update.message.reply_text("⛔ *Доступ запрещён!*\nЭта команда только для администраторов.",
-                                        parse_mode="Markdown")
-        return
-
-    users = load_users()
-
-    if not users:
-        await update.message.reply_text("📭 Нет пользователей для рассылки")
-        return
-
-    await update.message.reply_text(f"📢 Начинаю рассылку поста Гранты {len(users)} пользователям...")
-
-    success_count = 0
-    fail_count = 0
-
-    keyboard = [[InlineKeyboardButton("🫥 ЗАПОЛНИТЬ АНКЕТУ 🫥", url=SURVEY_URL)]]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    for user_id_str, user_data in users.items():
-        uid = int(user_id_str)
-
-        if is_admin(uid):
-            continue
-
-        try:
-            await context.bot.send_message(
-                chat_id=uid,
-                text=GRANTS_TEXT,
-                parse_mode="HTML",
-                disable_web_page_preview=False,
-                reply_markup=reply_markup
-            )
-
-            success_count += 1
-            print(f"✅ Гранты отправлены пользователю {user_data.get('first_name', uid)}")
-            await asyncio.sleep(0.3)
-
-        except Exception as e:
-            fail_count += 1
-            print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
-
-    await update.message.reply_text(
-        f"✅ Рассылка поста Гранты завершена!\n\n"
+        f"✅ Рассылка поста Zoom завершена!\n\n"
         f"📤 Успешно: {success_count}\n"
         f"❌ Ошибок: {fail_count}"
     )
@@ -725,10 +695,10 @@ def main() -> None:
 
     # Увеличиваем таймауты
     request = HTTPXRequest(
-        connect_timeout=60.0,  # было 30
-        read_timeout=60.0,  # было 30
-        write_timeout=60.0,  # было 30
-        pool_timeout=60.0  # было 30
+        connect_timeout=60.0,
+        read_timeout=60.0,
+        write_timeout=60.0,
+        pool_timeout=60.0
     )
 
     application = Application.builder().token(TOKEN).request(request).build()
@@ -739,10 +709,8 @@ def main() -> None:
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("myid", myid_command))
     application.add_handler(CommandHandler("stat", stat_command))
-    application.add_handler(CommandHandler("testwebinar", test_webinar))
-    application.add_handler(CommandHandler("sendwebinar", send_webinar_to_existing_users))
-    application.add_handler(CommandHandler("testgrants", test_grants))
-    application.add_handler(CommandHandler("sendgrants", send_grants_to_existing_users))
+    application.add_handler(CommandHandler("testzoom", test_zoom))
+    application.add_handler(CommandHandler("sendzoom", send_zoom_to_existing_users))
 
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
