@@ -102,6 +102,13 @@ ZOOM2_POST_TEXT = (
     "Обсудим, что такое креатив в монтаже и как вдохновляться не только на Pinterest🙌"
 )
 
+# Третий пост Zoom (обучение)
+ZOOM3_POST_TEXT = (
+    "<b>Этого ждали многииие…🤫</b>\n\n"
+    "Рассказываю про обучение «Vision Мастерская», что вас ждёт в ближайшие 3 месяца и как попасть на программу🛼\n\n"
+    "Поторопись, мест остаётся всё меньше.."
+)
+
 # Первый кейс (Алиса)
 CASE1_TEXT = (
     "<b>«Обучение стало лучшим вложением в 2026 году, потому что спустя 3 месяца я вышла на доход 130к в месяц»</b> 🪩\n\n"
@@ -160,6 +167,7 @@ CASE1_IMAGE_PATH = "images/pic1.jpg"
 CASE2_IMAGE_PATH = "images/pic2.jpg"
 ZOOM1_IMAGE_PATH = "images/1306_1.jpg"
 ZOOM2_IMAGE_PATH = "images/1306_2.jpg"
+ZOOM3_IMAGE_PATH = "images/1306_3.jpg"
 
 # Настройки задержек (в секундах)
 DELAY_AFTER_VIDEO_NOTE = 17  # 17 секунд до урока
@@ -293,6 +301,8 @@ async def set_commands(application: Application) -> None:
         BotCommand("sendzoom1", "📨 Отправить пост Zoom 1 всем"),
         BotCommand("testzoom2", "🧪 Тест поста Zoom 2"),
         BotCommand("sendzoom2", "📨 Отправить пост Zoom 2 всем"),
+        BotCommand("testzoom3", "🧪 Тест поста Zoom 3"),
+        BotCommand("sendzoom3", "📨 Отправить пост Zoom 3 всем"),
     ]
     await application.bot.set_my_commands(commands)
     print("✅ Команды бота установлены")
@@ -562,7 +572,9 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "/testzoom1 - Тест поста Zoom 1 (только админы)\n"
         "/sendzoom1 - Отправить пост Zoom 1 всем (только админы)\n"
         "/testzoom2 - Тест поста Zoom 2 (только админы)\n"
-        "/sendzoom2 - Отправить пост Zoom 2 всем (только админы)\n\n"
+        "/sendzoom2 - Отправить пост Zoom 2 всем (только админы)\n"
+        "/testzoom3 - Тест поста Zoom 3 (только админы)\n"
+        "/sendzoom3 - Отправить пост Zoom 3 всем (только админы)\n\n"
         "Просто нажимай на кнопки для навигации!"
     )
     await update.message.reply_text(help_text, parse_mode="Markdown")
@@ -632,6 +644,42 @@ async def test_zoom2(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         reply_markup = InlineKeyboardMarkup(keyboard)
         await update.message.reply_text(
             text=ZOOM2_POST_TEXT,
+            parse_mode="HTML",
+            reply_markup=reply_markup
+        )
+    except Exception as e:
+        await update.message.reply_text(f"❌ Ошибка: {e}")
+
+    await update.message.reply_text("✅ Готово!")
+
+
+async def test_zoom3(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет тестовый пост Zoom 3 только админу"""
+    user_id = update.effective_user.id
+
+    if not is_admin(user_id):
+        await update.message.reply_text("⛔ Доступ запрещён!")
+        return
+
+    await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю третий пост Zoom только вам...")
+
+    try:
+        keyboard = [[InlineKeyboardButton("🔗 ПЕРЕЙТИ НА ВЕБИНАР 🔗", url=ZOOM_URL)]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        with open(ZOOM3_IMAGE_PATH, 'rb') as photo:
+            await update.message.reply_photo(
+                photo=photo,
+                caption=ZOOM3_POST_TEXT,
+                parse_mode="HTML",
+                reply_markup=reply_markup
+            )
+    except FileNotFoundError:
+        await update.message.reply_text("❌ Фото 1306_3.jpg не найдено")
+        keyboard = [[InlineKeyboardButton("🔗 ПЕРЕЙТИ НА ВЕБИНАР 🔗", url=ZOOM_URL)]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await update.message.reply_text(
+            text=ZOOM3_POST_TEXT,
             parse_mode="HTML",
             reply_markup=reply_markup
         )
@@ -780,6 +828,75 @@ async def send_zoom2_to_existing_users(update: Update, context: ContextTypes.DEF
     )
 
 
+async def send_zoom3_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет третий пост Zoom всем существующим пользователям (только админы)"""
+    user_id = update.effective_user.id
+
+    if not is_admin(user_id):
+        await update.message.reply_text("⛔ *Доступ запрещён!*\nЭта команда только для администраторов.",
+                                        parse_mode="Markdown")
+        return
+
+    users = load_users()
+
+    if not users:
+        await update.message.reply_text("📭 Нет пользователей для рассылки")
+        return
+
+    await update.message.reply_text(f"📢 Начинаю рассылку третьего поста Zoom {len(users)} пользователям...")
+
+    success_count = 0
+    fail_count = 0
+
+    keyboard = [[InlineKeyboardButton("🔗 ПЕРЕЙТИ НА ВЕБИНАР 🔗", url=ZOOM_URL)]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    for user_id_str, user_data in users.items():
+        uid = int(user_id_str)
+
+        if is_admin(uid):
+            continue
+
+        try:
+            with open(ZOOM3_IMAGE_PATH, 'rb') as photo:
+                await context.bot.send_photo(
+                    chat_id=uid,
+                    photo=photo,
+                    caption=ZOOM3_POST_TEXT,
+                    parse_mode="HTML",
+                    reply_markup=reply_markup
+                )
+
+            success_count += 1
+            print(f"✅ Третий Zoom пост отправлен пользователю {user_data.get('first_name', uid)}")
+            await asyncio.sleep(0.3)
+
+        except FileNotFoundError:
+            try:
+                await context.bot.send_message(
+                    chat_id=uid,
+                    text=ZOOM3_POST_TEXT,
+                    parse_mode="HTML",
+                    reply_markup=reply_markup
+                )
+                success_count += 1
+                print(f"✅ Третий Zoom пост (без фото) отправлен пользователю {user_data.get('first_name', uid)}")
+            except Exception as e:
+                fail_count += 1
+                print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
+            await asyncio.sleep(0.3)
+
+        except Exception as e:
+            fail_count += 1
+            print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
+
+    await update.message.reply_text(
+        f"✅ Рассылка третьего поста Zoom завершена!\n\n"
+        f"📤 Успешно: {success_count}\n"
+        f"❌ Ошибок: {fail_count}"
+    )
+
+
 # --- Обработчик для любых сообщений ---
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Отвечает на любые текстовые сообщения, кроме команд"""
@@ -813,6 +930,8 @@ def main() -> None:
     application.add_handler(CommandHandler("sendzoom1", send_zoom1_to_existing_users))
     application.add_handler(CommandHandler("testzoom2", test_zoom2))
     application.add_handler(CommandHandler("sendzoom2", send_zoom2_to_existing_users))
+    application.add_handler(CommandHandler("testzoom3", test_zoom3))
+    application.add_handler(CommandHandler("sendzoom3", send_zoom3_to_existing_users))
 
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
