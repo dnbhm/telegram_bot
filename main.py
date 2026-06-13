@@ -119,8 +119,8 @@ GRANTS_TEXT = (
 )
 
 # Ссылка на вебинар и анкету
-WEBINAR_URL = "https://example.com/webinar"  # ЗАМЕНИТЕ НА РЕАЛЬНУЮ ССЫЛКУ
-SURVEY_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeV3hbxukt2k-_9JVf0OyPPJf68ySNcsoB-kZF6NjdeBRDOgQ/viewform?usp=publish-editor"
+WEBINAR_URL = "https://t.me/+l2NfnQhCgrA2NDhi"  # ЗАМЕНИТЕ НА РЕАЛЬНУЮ ССЫЛКУ
+SURVEY_URL = "https://docs.google.com/forms/d/e/1FAIpQLSe97sBgl1xuY6THBZjw4tENB5rDZSN8IQ46fpGC7mTer_cD8g/viewform?usp=header"
 VIDEO_URL = "https://www.youtube.com/watch?v=7q0tfS3NcJc&feature=youtu.be"
 
 # Пути к файлам
