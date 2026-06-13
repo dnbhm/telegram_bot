@@ -3,7 +3,7 @@ import asyncio
 import json
 from datetime import datetime
 from dotenv import load_dotenv
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, BotCommand
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, BotCommand, BotCommandScopeChat
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes, MessageHandler, filters
 from telegram.request import HTTPXRequest
 
@@ -105,7 +105,6 @@ WEBINAR_TEXT = (
     "я выберу несколько ваших работ из анкеты и разберу в прямом эфире, где поделюсь своим мнением🍦\n\n"
     "<b>Встречаемся уже в СЕГОДНЯ в 18:00 по МСК</b>\n\n"
     "Переходи по ссылке, чтобы участвовать на вебинаре и не забудь заполнить анкету на разбор, если хочешь получить комментарии от меня\n\n"
-    "<b>⭐️⭐️⭐️ССЫЛОЧКА⭐️⭐️⭐️</b>"
 )
 
 # Пост Гранты
@@ -118,7 +117,7 @@ GRANTS_TEXT = (
 )
 
 # Ссылка на вебинар и анкету
-WEBINAR_URL = "https://t.me/+l2NfnQhCgrA2NDhi"  # ЗАМЕНИТЕ НА РЕАЛЬНУЮ ССЫЛКУ
+WEBINAR_URL = "https://t.me/+l2NfnQhCgrA2NDhi"
 SURVEY_URL = "https://docs.google.com/forms/d/e/1FAIpQLSe97sBgl1xuY6THBZjw4tENB5rDZSN8IQ46fpGC7mTer_cD8g/viewform?usp=header"
 VIDEO_URL = "https://www.youtube.com/watch?v=7q0tfS3NcJc&feature=youtu.be"
 
@@ -249,29 +248,36 @@ async def stat_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 
 async def set_commands(application: Application) -> None:
-    """Устанавливает команды в меню бота (только для админов видны админские команды)"""
-    # Обычные команды для всех
-    commands = [
+    """Устанавливает команды в меню бота (админы видят все команды, обычные пользователи - только базовые)"""
+
+    # Базовые команды для всех пользователей
+    default_commands = [
         BotCommand("start", "Начать заново"),
         BotCommand("menu", "Показать главное меню"),
         BotCommand("help", "Помощь"),
         BotCommand("myid", "Узнать свой ID"),
     ]
-    await application.bot.set_my_commands(commands)
 
-    # Админские команды устанавливаются отдельно для админов
+    # Дополнительные команды только для админов
     admin_commands = [
-        BotCommand("stat", "Статистика (только админы)"),
+        BotCommand("stat", "📊 Статистика пользователей"),
         BotCommand("testwebinar", "🧪 Тест поста Вебинар"),
         BotCommand("sendwebinar", "📨 Отправить пост Вебинар всем"),
         BotCommand("testgrants", "🧪 Тест поста Гранты"),
         BotCommand("sendgrants", "📨 Отправить пост Гранты всем"),
     ]
 
+    # Устанавливаем базовые команды для всех
+    await application.bot.set_my_commands(default_commands)
+
+    # Устанавливаем расширенные команды для каждого админа
     for admin_id in ADMIN_IDS:
         try:
-            await application.bot.set_my_commands(commands, scope=telegram.BotCommandScopeChat(admin_id))
-            await application.bot.set_my_commands(admin_commands, scope=telegram.BotCommandScopeChat(admin_id))
+            await application.bot.set_my_commands(
+                default_commands + admin_commands,
+                scope=BotCommandScopeChat(chat_id=admin_id)
+            )
+            print(f"✅ Установлены админ-команды для {admin_id}")
         except Exception as e:
             print(f"⚠️ Не удалось установить команды для админа {admin_id}: {e}")
 
