@@ -89,11 +89,17 @@ VISION_CLUB_TEXT = (
     "<b><a href='https://t.me/+8cSWBiyep6FiN2Ri'>Vision Summer Club</a></b>"
 )
 
-# Пост Zoom (вебинар)
-ZOOM_POST_TEXT = (
+# Первый пост Zoom (начало)
+ZOOM1_POST_TEXT = (
     "<b>НАЧИНАЕМ ЧЕРЕЗ 5 МИНУТ 🛼</b>\n\n"
     "Сегодня ты узнаешь, как стать востребованным монтажёром уже этим летом\n\n"
     "Я собрала всю информацию и опыт, которые помогут тебе выстроить систему и начать расти в этой сфере🍦"
+)
+
+# Второй пост Zoom (креатив)
+ZOOM2_POST_TEXT = (
+    "<b>Продолжаем наш вебинар и переходим к теме креатива🛼</b>\n\n"
+    "Обсудим, что такое креатив в монтаже и как вдохновляться не только на Pinterest🙌"
 )
 
 # Первый кейс (Алиса)
@@ -145,14 +151,15 @@ CASE2_TEXT = (
 # Ссылки
 SURVEY_URL = "https://docs.google.com/forms/d/e/1FAIpQLSe97sBgl1xuY6THBZjw4tENB5rDZSN8IQ46fpGC7mTer_cD8g/viewform?usp=header"
 VIDEO_URL = "https://www.youtube.com/watch?v=7q0tfS3NcJc&feature=youtu.be"
-ZOOM_URL = "https://us06web.zoom.us/j/84069642341?pwd=MZIjhlbMuDsCF3hrcPbBIgmnbozoAD.1"  # ЗАМЕНИТЕ НА РЕАЛЬНУЮ ССЫЛКУ
+ZOOM_URL = "https://us06web.zoom.us/j/1234567890"  # ЗАМЕНИТЕ НА РЕАЛЬНУЮ ССЫЛКУ
 
 # Пути к файлам
 VIDEO_NOTE_PATH = "video_notes/welcome.mp4"
 LESSON_IMAGE_PATH = "images/lesson_preview.jpg"
 CASE1_IMAGE_PATH = "images/pic1.jpg"
 CASE2_IMAGE_PATH = "images/pic2.jpg"
-ZOOM_IMAGE_PATH = "images/1306_1.jpg"
+ZOOM1_IMAGE_PATH = "images/1306_1.jpg"
+ZOOM2_IMAGE_PATH = "images/1306_2.jpg"
 
 # Настройки задержек (в секундах)
 DELAY_AFTER_VIDEO_NOTE = 17  # 17 секунд до урока
@@ -163,6 +170,7 @@ DELAY_BETWEEN_CASES = 1800  # 30 минут между кейсами
 DELAY_AFTER_CASE2 = 3600  # 1 час после второго кейса до поста Vision Club
 
 user_tasks = {}
+
 
 # --- Функции для работы с пользователями ---
 
@@ -274,22 +282,19 @@ async def stat_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 
 async def set_commands(application: Application) -> None:
-    """Устанавливает команды в меню бота (админы видят все команды, обычные пользователи - только базовые)"""
-
-    # Базовые команды для всех пользователей
+    """Устанавливает команды в меню бота"""
     commands = [
         BotCommand("start", "Начать заново"),
         BotCommand("menu", "Показать главное меню"),
         BotCommand("help", "Помощь"),
         BotCommand("myid", "Узнать свой ID"),
         BotCommand("stat", "📊 Статистика пользователей (только админы)"),
-        BotCommand("testzoom", "🧪 Тест поста Zoom"),
-        BotCommand("sendzoom", "📨 Отправить пост Zoom всем"),
+        BotCommand("testzoom1", "🧪 Тест поста Zoom 1"),
+        BotCommand("sendzoom1", "📨 Отправить пост Zoom 1 всем"),
+        BotCommand("testzoom2", "🧪 Тест поста Zoom 2"),
+        BotCommand("sendzoom2", "📨 Отправить пост Zoom 2 всем"),
     ]
-
-    # Устанавливаем команды для всех
     await application.bot.set_my_commands(commands)
-
     print("✅ Команды бота установлены")
 
 
@@ -554,32 +559,34 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "/help - Показать эту справку\n"
         "/myid - Узнать свой ID\n"
         "/stat - Статистика пользователей (только админы)\n"
-        "/testzoom - Тест поста Zoom (только админы)\n"
-        "/sendzoom - Отправить пост Zoom всем (только админы)\n\n"
+        "/testzoom1 - Тест поста Zoom 1 (только админы)\n"
+        "/sendzoom1 - Отправить пост Zoom 1 всем (только админы)\n"
+        "/testzoom2 - Тест поста Zoom 2 (только админы)\n"
+        "/sendzoom2 - Отправить пост Zoom 2 всем (только админы)\n\n"
         "Просто нажимай на кнопки для навигации!"
     )
     await update.message.reply_text(help_text, parse_mode="Markdown")
 
 
-# --- ТЕСТОВАЯ КОМАНДА ДЛЯ ПРОВЕРКИ ПОСТА ZOOM (только для админов) ---
-async def test_zoom(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет тестовый пост Zoom только админу"""
+# --- ТЕСТОВЫЕ КОМАНДЫ ДЛЯ ПРОВЕРКИ ПОСТОВ ZOOM (только для админов) ---
+async def test_zoom1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет тестовый пост Zoom 1 только админу"""
     user_id = update.effective_user.id
 
     if not is_admin(user_id):
         await update.message.reply_text("⛔ Доступ запрещён!")
         return
 
-    await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю пост Zoom только вам...")
+    await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю первый пост Zoom только вам...")
 
     try:
         keyboard = [[InlineKeyboardButton("🔗 ПЕРЕЙТИ НА ВЕБИНАР 🔗", url=ZOOM_URL)]]
         reply_markup = InlineKeyboardMarkup(keyboard)
 
-        with open(ZOOM_IMAGE_PATH, 'rb') as photo:
+        with open(ZOOM1_IMAGE_PATH, 'rb') as photo:
             await update.message.reply_photo(
                 photo=photo,
-                caption=ZOOM_POST_TEXT,
+                caption=ZOOM1_POST_TEXT,
                 parse_mode="HTML",
                 reply_markup=reply_markup
             )
@@ -588,7 +595,7 @@ async def test_zoom(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         keyboard = [[InlineKeyboardButton("🔗 ПЕРЕЙТИ НА ВЕБИНАР 🔗", url=ZOOM_URL)]]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await update.message.reply_text(
-            text=ZOOM_POST_TEXT,
+            text=ZOOM1_POST_TEXT,
             parse_mode="HTML",
             reply_markup=reply_markup
         )
@@ -598,9 +605,45 @@ async def test_zoom(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("✅ Готово!")
 
 
-# --- КОМАНДА ДЛЯ РАССЫЛКИ ПОСТА ZOOM ВСЕМ ПОЛЬЗОВАТЕЛЯМ (только для админов) ---
-async def send_zoom_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет пост Zoom всем существующим пользователям (только админы)"""
+async def test_zoom2(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет тестовый пост Zoom 2 только админу"""
+    user_id = update.effective_user.id
+
+    if not is_admin(user_id):
+        await update.message.reply_text("⛔ Доступ запрещён!")
+        return
+
+    await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю второй пост Zoom только вам...")
+
+    try:
+        keyboard = [[InlineKeyboardButton("🔗 ПЕРЕЙТИ НА ВЕБИНАР 🔗", url=ZOOM_URL)]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        with open(ZOOM2_IMAGE_PATH, 'rb') as photo:
+            await update.message.reply_photo(
+                photo=photo,
+                caption=ZOOM2_POST_TEXT,
+                parse_mode="HTML",
+                reply_markup=reply_markup
+            )
+    except FileNotFoundError:
+        await update.message.reply_text("❌ Фото 1306_2.jpg не найдено")
+        keyboard = [[InlineKeyboardButton("🔗 ПЕРЕЙТИ НА ВЕБИНАР 🔗", url=ZOOM_URL)]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await update.message.reply_text(
+            text=ZOOM2_POST_TEXT,
+            parse_mode="HTML",
+            reply_markup=reply_markup
+        )
+    except Exception as e:
+        await update.message.reply_text(f"❌ Ошибка: {e}")
+
+    await update.message.reply_text("✅ Готово!")
+
+
+# --- КОМАНДЫ ДЛЯ РАССЫЛКИ ПОСТОВ ZOOM ВСЕМ ПОЛЬЗОВАТЕЛЯМ (только для админов) ---
+async def send_zoom1_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет первый пост Zoom всем существующим пользователям (только админы)"""
     user_id = update.effective_user.id
 
     if not is_admin(user_id):
@@ -614,7 +657,7 @@ async def send_zoom_to_existing_users(update: Update, context: ContextTypes.DEFA
         await update.message.reply_text("📭 Нет пользователей для рассылки")
         return
 
-    await update.message.reply_text(f"📢 Начинаю рассылку поста Zoom {len(users)} пользователям...")
+    await update.message.reply_text(f"📢 Начинаю рассылку первого поста Zoom {len(users)} пользователям...")
 
     success_count = 0
     fail_count = 0
@@ -629,29 +672,29 @@ async def send_zoom_to_existing_users(update: Update, context: ContextTypes.DEFA
             continue
 
         try:
-            with open(ZOOM_IMAGE_PATH, 'rb') as photo:
+            with open(ZOOM1_IMAGE_PATH, 'rb') as photo:
                 await context.bot.send_photo(
                     chat_id=uid,
                     photo=photo,
-                    caption=ZOOM_POST_TEXT,
+                    caption=ZOOM1_POST_TEXT,
                     parse_mode="HTML",
                     reply_markup=reply_markup
                 )
 
             success_count += 1
-            print(f"✅ Zoom пост отправлен пользователю {user_data.get('first_name', uid)}")
+            print(f"✅ Первый Zoom пост отправлен пользователю {user_data.get('first_name', uid)}")
             await asyncio.sleep(0.3)
 
         except FileNotFoundError:
             try:
                 await context.bot.send_message(
                     chat_id=uid,
-                    text=ZOOM_POST_TEXT,
+                    text=ZOOM1_POST_TEXT,
                     parse_mode="HTML",
                     reply_markup=reply_markup
                 )
                 success_count += 1
-                print(f"✅ Zoom пост (без фото) отправлен пользователю {user_data.get('first_name', uid)}")
+                print(f"✅ Первый Zoom пост (без фото) отправлен пользователю {user_data.get('first_name', uid)}")
             except Exception as e:
                 fail_count += 1
                 print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
@@ -662,7 +705,76 @@ async def send_zoom_to_existing_users(update: Update, context: ContextTypes.DEFA
             print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
 
     await update.message.reply_text(
-        f"✅ Рассылка поста Zoom завершена!\n\n"
+        f"✅ Рассылка первого поста Zoom завершена!\n\n"
+        f"📤 Успешно: {success_count}\n"
+        f"❌ Ошибок: {fail_count}"
+    )
+
+
+async def send_zoom2_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет второй пост Zoom всем существующим пользователям (только админы)"""
+    user_id = update.effective_user.id
+
+    if not is_admin(user_id):
+        await update.message.reply_text("⛔ *Доступ запрещён!*\nЭта команда только для администраторов.",
+                                        parse_mode="Markdown")
+        return
+
+    users = load_users()
+
+    if not users:
+        await update.message.reply_text("📭 Нет пользователей для рассылки")
+        return
+
+    await update.message.reply_text(f"📢 Начинаю рассылку второго поста Zoom {len(users)} пользователям...")
+
+    success_count = 0
+    fail_count = 0
+
+    keyboard = [[InlineKeyboardButton("🔗 ПЕРЕЙТИ НА ВЕБИНАР 🔗", url=ZOOM_URL)]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    for user_id_str, user_data in users.items():
+        uid = int(user_id_str)
+
+        if is_admin(uid):
+            continue
+
+        try:
+            with open(ZOOM2_IMAGE_PATH, 'rb') as photo:
+                await context.bot.send_photo(
+                    chat_id=uid,
+                    photo=photo,
+                    caption=ZOOM2_POST_TEXT,
+                    parse_mode="HTML",
+                    reply_markup=reply_markup
+                )
+
+            success_count += 1
+            print(f"✅ Второй Zoom пост отправлен пользователю {user_data.get('first_name', uid)}")
+            await asyncio.sleep(0.3)
+
+        except FileNotFoundError:
+            try:
+                await context.bot.send_message(
+                    chat_id=uid,
+                    text=ZOOM2_POST_TEXT,
+                    parse_mode="HTML",
+                    reply_markup=reply_markup
+                )
+                success_count += 1
+                print(f"✅ Второй Zoom пост (без фото) отправлен пользователю {user_data.get('first_name', uid)}")
+            except Exception as e:
+                fail_count += 1
+                print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
+            await asyncio.sleep(0.3)
+
+        except Exception as e:
+            fail_count += 1
+            print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
+
+    await update.message.reply_text(
+        f"✅ Рассылка второго поста Zoom завершена!\n\n"
         f"📤 Успешно: {success_count}\n"
         f"❌ Ошибок: {fail_count}"
     )
@@ -697,10 +809,10 @@ def main() -> None:
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("myid", myid_command))
     application.add_handler(CommandHandler("stat", stat_command))
-    application.add_handler(CommandHandler("testzoom", test_zoom))
-    application.add_handler(CommandHandler("sendzoom", send_zoom_to_existing_users))
-
-
+    application.add_handler(CommandHandler("testzoom1", test_zoom1))
+    application.add_handler(CommandHandler("sendzoom1", send_zoom1_to_existing_users))
+    application.add_handler(CommandHandler("testzoom2", test_zoom2))
+    application.add_handler(CommandHandler("sendzoom2", send_zoom2_to_existing_users))
 
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
