@@ -89,7 +89,7 @@ VISION_CLUB_TEXT = (
     "<b><a href='https://t.me/+8cSWBiyep6FiN2Ri'>Vision Summer Club</a></b>"
 )
 
-# Пост Vision Мастерская
+# Пост Vision Мастерская (без фото)
 VISION_MASTERSKAYA_POST_TEXT = (
     "<b>Как насчёт того, чтобы провести это лето ярко и продуктивно??🪩</b>\n\n"
     "мне постоянно поступают заявки на второй поток Vision Мастерской, и я решила, что лето — реально самое лучшее время, когда можно стать крутецким монтажером⭐️\n\n"
@@ -106,7 +106,7 @@ VISION_MASTERSKAYA_POST_TEXT = (
     "// Чат с вакансиями, где я отдаю самых горячих клиентов\n"
     "// Эфир с юристом\n"
     "// Бот саморефлексии, чтобы вы могли отслеживать уровень продуктивности\n\n"
-    "поэтому <b>6 июля стартует «Vision Мастерская»</b>, но уже <b>29 июня начинается предобучение</b> — знакомимся, вникаем в темы 🍦"
+    "<b>поэтому 6 июля стартует «Vision Мастерская», но уже 29 июня начинается предобучение — знакомимся, вникаем в темы 🍦</b>"
 )
 
 # Первый кейс (Алиса)
@@ -165,7 +165,6 @@ VIDEO_NOTE_PATH = "video_notes/welcome.mp4"
 LESSON_IMAGE_PATH = "images/lesson_preview.jpg"
 CASE1_IMAGE_PATH = "images/pic1.jpg"
 CASE2_IMAGE_PATH = "images/pic2.jpg"
-VISION_MASTERSKAYA_IMAGE_PATH = "images/vm.jpg"
 
 # Настройки задержек (в секундах)
 DELAY_AFTER_VIDEO_NOTE = 17  # 17 секунд до урока
@@ -572,7 +571,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 # --- ТЕСТОВАЯ КОМАНДА ДЛЯ ПРОВЕРКИ ПОСТА VISION МАСТЕРСКАЯ (только для админов) ---
 async def test_vm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет тестовый пост Vision Мастерская только админу"""
+    """Отправляет тестовый пост Vision Мастерская только админу (без фото)"""
     user_id = update.effective_user.id
 
     if not is_admin(user_id):
@@ -585,21 +584,11 @@ async def test_vm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         keyboard = [[InlineKeyboardButton("⭐️ ЗАНЯТЬ МЕСТЕЧКО ⭐️", url=VISION_MASTERSKAYA_URL)]]
         reply_markup = InlineKeyboardMarkup(keyboard)
 
-        with open(VISION_MASTERSKAYA_IMAGE_PATH, 'rb') as photo:
-            await update.message.reply_photo(
-                photo=photo,
-                caption=VISION_MASTERSKAYA_POST_TEXT,
-                parse_mode="HTML",
-                reply_markup=reply_markup
-            )
-    except FileNotFoundError:
-        await update.message.reply_text("❌ Фото vm.jpg не найдено")
-        keyboard = [[InlineKeyboardButton("⭐️ ЗАНЯТЬ МЕСТЕЧКО ⭐️", url=VISION_MASTERSKAYA_URL)]]
-        reply_markup = InlineKeyboardMarkup(keyboard)
         await update.message.reply_text(
             text=VISION_MASTERSKAYA_POST_TEXT,
             parse_mode="HTML",
-            reply_markup=reply_markup
+            reply_markup=reply_markup,
+            disable_web_page_preview=False
         )
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка: {e}")
@@ -609,7 +598,7 @@ async def test_vm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 # --- КОМАНДА ДЛЯ РАССЫЛКИ ПОСТА VISION МАСТЕРСКАЯ ВСЕМ ПОЛЬЗОВАТЕЛЯМ (только для админов) ---
 async def send_vm_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет пост Vision Мастерская всем существующим пользователям (только админы)"""
+    """Отправляет пост Vision Мастерская всем существующим пользователям (только админы, без фото)"""
     user_id = update.effective_user.id
 
     if not is_admin(user_id):
@@ -638,32 +627,16 @@ async def send_vm_to_existing_users(update: Update, context: ContextTypes.DEFAUL
             continue
 
         try:
-            with open(VISION_MASTERSKAYA_IMAGE_PATH, 'rb') as photo:
-                await context.bot.send_photo(
-                    chat_id=uid,
-                    photo=photo,
-                    caption=VISION_MASTERSKAYA_POST_TEXT,
-                    parse_mode="HTML",
-                    reply_markup=reply_markup
-                )
+            await context.bot.send_message(
+                chat_id=uid,
+                text=VISION_MASTERSKAYA_POST_TEXT,
+                parse_mode="HTML",
+                reply_markup=reply_markup,
+                disable_web_page_preview=False
+            )
 
             success_count += 1
             print(f"✅ Vision Мастерская отправлен пользователю {user_data.get('first_name', uid)}")
-            await asyncio.sleep(0.3)
-
-        except FileNotFoundError:
-            try:
-                await context.bot.send_message(
-                    chat_id=uid,
-                    text=VISION_MASTERSKAYA_POST_TEXT,
-                    parse_mode="HTML",
-                    reply_markup=reply_markup
-                )
-                success_count += 1
-                print(f"✅ Vision Мастерская (без фото) отправлен пользователю {user_data.get('first_name', uid)}")
-            except Exception as e:
-                fail_count += 1
-                print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
             await asyncio.sleep(0.3)
 
         except Exception as e:
