@@ -665,10 +665,10 @@ def main() -> None:
 
     # Увеличиваем таймауты
     request = HTTPXRequest(
-        connect_timeout=60.0,
-        read_timeout=60.0,
-        write_timeout=60.0,
-        pool_timeout=60.0
+        connect_timeout=120.0,  # было 60
+        read_timeout=120.0,     # было 60
+        write_timeout=120.0,    # было 60
+        pool_timeout=120.0      # было 60
     )
 
     application = Application.builder().token(TOKEN).request(request).build()
