@@ -89,24 +89,13 @@ VISION_CLUB_TEXT = (
     "<b><a href='https://t.me/+8cSWBiyep6FiN2Ri'>Vision Summer Club</a></b>"
 )
 
-# Пост Vision Мастерская (без фото)
-VISION_MASTERSKAYA_POST_TEXT = (
-    "<b>Как насчёт того, чтобы провести это лето ярко и продуктивно??🪩</b>\n\n"
-    "мне постоянно поступают заявки на второй поток Vision Мастерской, и я решила, что лето — реально самое лучшее время, когда можно стать крутецким монтажером⭐️\n\n"
-    "Мастерская — моя любовь, 3 месяца обучения компьютерному монтажу, где мы развиваем навык насмотренности, креативности, изучаем новые программы, фишки, анализируем кино, ищем клиентов и зарабатываем на любимом деле 🛼\n\n"
-    "<b>Что вас ждёт:</b>\n\n"
-    "// освоишь базу в монтаже, которая поможет развиться в данной сфере\n"
-    "// изучишь программы: CapCut, Final Cut, Davinci, After Effects\n"
-    "// получишь инструменты, которые помогут создавать креативные и продающие ролики\n"
-    "// освоишь вертикальный и горизонтальный монтаж\n"
-    "// прокачаешь насмотренность и креативное мышление\n"
-    "// научишься привлекать клиентов и качественно взаимодействовать с ними\n\n"
-    "<b>Но ещё не всё…🤫</b>\n\n"
-    "// Интенсивы по заработку и прокачке личного бренда\n"
-    "// Чат с вакансиями, где я отдаю самых горячих клиентов\n"
-    "// Эфир с юристом\n"
-    "// Бот саморефлексии, чтобы вы могли отслеживать уровень продуктивности\n\n"
-    "<b>поэтому 6 июля стартует «Vision Мастерская», но уже 29 июня начинается предобучение — знакомимся, вникаем в темы 🍦</b>"
+# Пост "24 часа до закрытия набора"
+LAST_CHANCE_POST_TEXT = (
+    "<b>⏰ 24 ЧАСА ДО ЗАКРЫТИЯ НАБОРА ⏰</b>\n\n"
+    "Ну что, на этой неделе стартовало обучение «Vision Мастерская» 🎬\n\n"
+    "Ученики уже начали знакомиться, вникать в темы, потихоньку погружаться\n\n"
+    "У вас есть последняя возможность, чтобы погрузиться в летнюю атмосферу и начать расти в монтаже. Если вы давно думали, хотели, но откладывали, то сейчас самое время🍦\n\n"
+    "Вас ждут 3 месяца обучения, где вы не просто научитесь монтировать, а станете востребованными специалистами, найдете свой стиль, сможете развить креатив и выйти на доход🛼"
 )
 
 # Пост Вика (кейс с pic3.jpg)
@@ -125,13 +114,6 @@ VIKA_POST_TEXT = (
     "> перестала бояться клиентов и общения с ними\n"
     "> повысила заработок, просто начав изучать новую сферу и вышла на доход 120к в месяц\n\n"
     "<b>Многие хотят творчество и доход, монтаж — идеальный баланс, потому что спрос растёт, клиенты есть и даже с нулём опыта можно собрать портфолио, найти заказчиков и выйти в прибыль🎬 </b>"
-)
-
-# Пост "Стартуем 6 июля"
-START_POST_TEXT = (
-    "sooooooo, если вы хотите изучить самую востребованную профессию в 2026 году🍦\n\n"
-    "То скорее занимайте местечко, ведь их остаётся совсем мало!!!\n\n"
-    "стартуееем уже <b>6 июля!!!⭐️</b>"
 )
 
 # Первый кейс (Алиса)
@@ -191,6 +173,7 @@ LESSON_IMAGE_PATH = "images/lesson_preview.jpg"
 CASE1_IMAGE_PATH = "images/pic1.jpg"
 CASE2_IMAGE_PATH = "images/pic2.jpg"
 VIKA_IMAGE_PATH = "images/pic3.jpg"
+LAST_CHANCE_IMAGE_PATH = "images/pic4.jpg"
 
 # Настройки задержек (в секундах)
 DELAY_AFTER_VIDEO_NOTE = 17  # 17 секунд до урока
@@ -320,12 +303,8 @@ async def set_commands(application: Application) -> None:
         BotCommand("help", "Помощь"),
         BotCommand("myid", "Узнать свой ID"),
         BotCommand("stat", "📊 Статистика пользователей (только админы)"),
-        BotCommand("testvika", "🧪 Тест поста Вика"),
-        BotCommand("sendvika", "📨 Отправить пост Вика всем"),
-        BotCommand("teststart", "🧪 Тест поста Старт"),
-        BotCommand("sendstart", "📨 Отправить пост Старт всем"),
-        BotCommand("testvm", "🧪 Тест поста Vision Мастерская"),
-        BotCommand("sendvm", "📨 Отправить пост Vision Мастерская всем"),
+        BotCommand("testlast", "🧪 Тест поста Последний шанс"),
+        BotCommand("sendlast", "📨 Отправить пост Последний шанс всем"),
     ]
     await application.bot.set_my_commands(commands)
     print("✅ Команды бота установлены")
@@ -592,63 +571,43 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "/help - Показать эту справку\n"
         "/myid - Узнать свой ID\n"
         "/stat - Статистика пользователей (только админы)\n"
-        "/testvika - Тест поста Вика (только админы)\n"
-        "/sendvika - Отправить пост Вика всем (только админы)\n"
-        "/teststart - Тест поста Старт (только админы)\n"
-        "/sendstart - Отправить пост Старт всем (только админы)\n"
-        "/testvm - Тест поста Vision Мастерская (только админы)\n"
-        "/sendvm - Отправить пост Vision Мастерская всем (только админы)\n\n"
+        "/testlast - Тест поста Последний шанс (только админы)\n"
+        "/sendlast - Отправить пост Последний шанс всем (только админы)\n\n"
         "Просто нажимай на кнопки для навигации!"
     )
     await update.message.reply_text(help_text, parse_mode="Markdown")
 
 
 # --- ТЕСТОВЫЕ КОМАНДЫ ДЛЯ ПРОВЕРКИ (только для админов) ---
-async def test_vika(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет тестовый пост Вика только админу"""
+async def test_last(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет тестовый пост Последний шанс только админу"""
     user_id = update.effective_user.id
 
     if not is_admin(user_id):
         await update.message.reply_text("⛔ Доступ запрещён!")
         return
 
-    await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю пост Вика только вам...")
+    await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю пост Последний шанс только вам...")
 
     try:
-        with open(VIKA_IMAGE_PATH, 'rb') as photo:
+        keyboard = [[InlineKeyboardButton("⭐️ ЗАНЯТЬ МЕСТЕЧКО ⭐️", url=VISION_MASTERSKAYA_URL)]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        with open(LAST_CHANCE_IMAGE_PATH, 'rb') as photo:
             await update.message.reply_photo(
                 photo=photo,
-                caption=VIKA_POST_TEXT,
-                parse_mode="HTML"
+                caption=LAST_CHANCE_POST_TEXT,
+                parse_mode="HTML",
+                reply_markup=reply_markup
             )
     except FileNotFoundError:
-        await update.message.reply_text("❌ Фото pic3.jpg не найдено")
-        await update.message.reply_text(VIKA_POST_TEXT, parse_mode="HTML")
-    except Exception as e:
-        await update.message.reply_text(f"❌ Ошибка: {e}")
-
-    await update.message.reply_text("✅ Готово!")
-
-
-async def test_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет тестовый пост Старт только админу"""
-    user_id = update.effective_user.id
-
-    if not is_admin(user_id):
-        await update.message.reply_text("⛔ Доступ запрещён!")
-        return
-
-    await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю пост Старт только вам...")
-
-    try:
+        await update.message.reply_text("❌ Фото pic4.jpg не найдено")
         keyboard = [[InlineKeyboardButton("⭐️ ЗАНЯТЬ МЕСТЕЧКО ⭐️", url=VISION_MASTERSKAYA_URL)]]
         reply_markup = InlineKeyboardMarkup(keyboard)
-
         await update.message.reply_text(
-            text=START_POST_TEXT,
+            text=LAST_CHANCE_POST_TEXT,
             parse_mode="HTML",
-            reply_markup=reply_markup,
-            disable_web_page_preview=False
+            reply_markup=reply_markup
         )
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка: {e}")
@@ -656,35 +615,9 @@ async def test_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     await update.message.reply_text("✅ Готово!")
 
 
-async def test_vm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет тестовый пост Vision Мастерская только админу (без фото)"""
-    user_id = update.effective_user.id
-
-    if not is_admin(user_id):
-        await update.message.reply_text("⛔ Доступ запрещён!")
-        return
-
-    await update.message.reply_text("🧪 Тестовая отправка\n\nОтправляю пост Vision Мастерская только вам...")
-
-    try:
-        keyboard = [[InlineKeyboardButton("⭐️ ЗАНЯТЬ МЕСТЕЧКО ⭐️", url=VISION_MASTERSKAYA_URL)]]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-
-        await update.message.reply_text(
-            text=VISION_MASTERSKAYA_POST_TEXT,
-            parse_mode="HTML",
-            reply_markup=reply_markup,
-            disable_web_page_preview=False
-        )
-    except Exception as e:
-        await update.message.reply_text(f"❌ Ошибка: {e}")
-
-    await update.message.reply_text("✅ Готово!")
-
-
-# --- КОМАНДЫ ДЛЯ РАССЫЛКИ ВСЕМ ПОЛЬЗОВАТЕЛЯМ (только для админов) ---
-async def send_vika_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет пост Вика всем существующим пользователям (только админы)"""
+# --- КОМАНДА ДЛЯ РАССЫЛКИ ВСЕМ ПОЛЬЗОВАТЕЛЯМ (только для админов) ---
+async def send_last_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Отправляет пост Последний шанс всем существующим пользователям (только админы)"""
     user_id = update.effective_user.id
 
     if not is_admin(user_id):
@@ -698,10 +631,13 @@ async def send_vika_to_existing_users(update: Update, context: ContextTypes.DEFA
         await update.message.reply_text("📭 Нет пользователей для рассылки")
         return
 
-    await update.message.reply_text(f"📢 Начинаю рассылку поста Вика {len(users)} пользователям...")
+    await update.message.reply_text(f"📢 Начинаю рассылку поста Последний шанс {len(users)} пользователям...")
 
     success_count = 0
     fail_count = 0
+
+    keyboard = [[InlineKeyboardButton("⭐️ ЗАНЯТЬ МЕСТЕЧКО ⭐️", url=VISION_MASTERSKAYA_URL)]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
     for user_id_str, user_data in users.items():
         uid = int(user_id_str)
@@ -710,27 +646,29 @@ async def send_vika_to_existing_users(update: Update, context: ContextTypes.DEFA
             continue
 
         try:
-            with open(VIKA_IMAGE_PATH, 'rb') as photo:
+            with open(LAST_CHANCE_IMAGE_PATH, 'rb') as photo:
                 await context.bot.send_photo(
                     chat_id=uid,
                     photo=photo,
-                    caption=VIKA_POST_TEXT,
-                    parse_mode="HTML"
+                    caption=LAST_CHANCE_POST_TEXT,
+                    parse_mode="HTML",
+                    reply_markup=reply_markup
                 )
 
             success_count += 1
-            print(f"✅ Пост Вика отправлен пользователю {user_data.get('first_name', uid)}")
+            print(f"✅ Пост Последний шанс отправлен пользователю {user_data.get('first_name', uid)}")
             await asyncio.sleep(0.3)
 
         except FileNotFoundError:
             try:
                 await context.bot.send_message(
                     chat_id=uid,
-                    text=VIKA_POST_TEXT,
-                    parse_mode="HTML"
+                    text=LAST_CHANCE_POST_TEXT,
+                    parse_mode="HTML",
+                    reply_markup=reply_markup
                 )
                 success_count += 1
-                print(f"✅ Пост Вика (без фото) отправлен пользователю {user_data.get('first_name', uid)}")
+                print(f"✅ Пост Последний шанс (без фото) отправлен пользователю {user_data.get('first_name', uid)}")
             except Exception as e:
                 fail_count += 1
                 print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
@@ -741,113 +679,7 @@ async def send_vika_to_existing_users(update: Update, context: ContextTypes.DEFA
             print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
 
     await update.message.reply_text(
-        f"✅ Рассылка поста Вика завершена!\n\n"
-        f"📤 Успешно: {success_count}\n"
-        f"❌ Ошибок: {fail_count}"
-    )
-
-
-async def send_start_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет пост Старт всем существующим пользователям (только админы)"""
-    user_id = update.effective_user.id
-
-    if not is_admin(user_id):
-        await update.message.reply_text("⛔ *Доступ запрещён!*\nЭта команда только для администраторов.",
-                                        parse_mode="Markdown")
-        return
-
-    users = load_users()
-
-    if not users:
-        await update.message.reply_text("📭 Нет пользователей для рассылки")
-        return
-
-    await update.message.reply_text(f"📢 Начинаю рассылку поста Старт {len(users)} пользователям...")
-
-    success_count = 0
-    fail_count = 0
-
-    keyboard = [[InlineKeyboardButton("⭐️ ЗАНЯТЬ МЕСТЕЧКО ⭐️", url=VISION_MASTERSKAYA_URL)]]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    for user_id_str, user_data in users.items():
-        uid = int(user_id_str)
-
-        if is_admin(uid):
-            continue
-
-        try:
-            await context.bot.send_message(
-                chat_id=uid,
-                text=START_POST_TEXT,
-                parse_mode="HTML",
-                reply_markup=reply_markup,
-                disable_web_page_preview=False
-            )
-
-            success_count += 1
-            print(f"✅ Пост Старт отправлен пользователю {user_data.get('first_name', uid)}")
-            await asyncio.sleep(0.3)
-
-        except Exception as e:
-            fail_count += 1
-            print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
-
-    await update.message.reply_text(
-        f"✅ Рассылка поста Старт завершена!\n\n"
-        f"📤 Успешно: {success_count}\n"
-        f"❌ Ошибок: {fail_count}"
-    )
-
-
-async def send_vm_to_existing_users(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Отправляет пост Vision Мастерская всем существующим пользователям (только админы, без фото)"""
-    user_id = update.effective_user.id
-
-    if not is_admin(user_id):
-        await update.message.reply_text("⛔ *Доступ запрещён!*\nЭта команда только для администраторов.",
-                                        parse_mode="Markdown")
-        return
-
-    users = load_users()
-
-    if not users:
-        await update.message.reply_text("📭 Нет пользователей для рассылки")
-        return
-
-    await update.message.reply_text(f"📢 Начинаю рассылку поста Vision Мастерская {len(users)} пользователям...")
-
-    success_count = 0
-    fail_count = 0
-
-    keyboard = [[InlineKeyboardButton("⭐️ ЗАНЯТЬ МЕСТЕЧКО ⭐️", url=VISION_MASTERSKAYA_URL)]]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    for user_id_str, user_data in users.items():
-        uid = int(user_id_str)
-
-        if is_admin(uid):
-            continue
-
-        try:
-            await context.bot.send_message(
-                chat_id=uid,
-                text=VISION_MASTERSKAYA_POST_TEXT,
-                parse_mode="HTML",
-                reply_markup=reply_markup,
-                disable_web_page_preview=False
-            )
-
-            success_count += 1
-            print(f"✅ Vision Мастерская отправлен пользователю {user_data.get('first_name', uid)}")
-            await asyncio.sleep(0.3)
-
-        except Exception as e:
-            fail_count += 1
-            print(f"❌ Ошибка при отправке пользователю {uid}: {e}")
-
-    await update.message.reply_text(
-        f"✅ Рассылка поста Vision Мастерская завершена!\n\n"
+        f"✅ Рассылка поста Последний шанс завершена!\n\n"
         f"📤 Успешно: {success_count}\n"
         f"❌ Ошибок: {fail_count}"
     )
@@ -882,12 +714,8 @@ def main() -> None:
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("myid", myid_command))
     application.add_handler(CommandHandler("stat", stat_command))
-    application.add_handler(CommandHandler("testvika", test_vika))
-    application.add_handler(CommandHandler("sendvika", send_vika_to_existing_users))
-    application.add_handler(CommandHandler("teststart", test_start))
-    application.add_handler(CommandHandler("sendstart", send_start_to_existing_users))
-    application.add_handler(CommandHandler("testvm", test_vm))
-    application.add_handler(CommandHandler("sendvm", send_vm_to_existing_users))
+    application.add_handler(CommandHandler("testlast", test_last))
+    application.add_handler(CommandHandler("sendlast", send_last_to_existing_users))
 
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
