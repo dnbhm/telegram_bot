@@ -7,6 +7,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, BotComm
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes, MessageHandler, filters
 from telegram.request import HTTPXRequest
 
+
 # Загружаем переменные окружения из .env файла
 load_dotenv()
 
